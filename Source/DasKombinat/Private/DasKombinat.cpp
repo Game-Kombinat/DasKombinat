@@ -2,8 +2,6 @@
 
 #include "DasKombinat.h"
 
-#include "Coroutines/Yields.h"
-
 #define LOCTEXT_NAMESPACE "FDasKombinatModule"
 
 void FDasKombinatModule::StartupModule() {

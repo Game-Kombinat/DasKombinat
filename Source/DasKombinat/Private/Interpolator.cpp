@@ -4,6 +4,11 @@
 #include "CoroutineManager.h"
 #include "Kismet/KismetMathLibrary.h"
 
+FInterpolator::FInterpolator(): startTime(0), stateA(0), stateB(0), currentValue(0), timeOfPause(0) {
+    world = nullptr;
+    duration01 = duration10 = 0;
+}
+
 FInterpolator::FInterpolator(float duration, UWorld* world): startTime(0), stateA(0), stateB(0), currentValue(0),
                                                              timeOfPause(0) {
     duration01 = duration;
@@ -71,6 +76,10 @@ float FInterpolator::SampleTime() const {
 void FInterpolator::Anim8(UWorld* world, float duration, bool playForward, FAnim8Sample onSample, FAnim8Done onFinish) {
     UCoroutineManager::Instance()->Add(new FAnim8Action(playForward, FInterpolator(duration, world), onSample, onFinish));
 }
+
+// void FInterpolator::Anim8(UWorld* world, float duration, bool playForward, FAnim8Sample onSample, FAnim8Done onFinish) {
+//     UCoroutineManager::Instance()->Add(new FAnim8Action(playForward, FInterpolator(duration, world), onSample, onFinish));
+// }
 
 void FInterpolator::Force(float target) {
     if (!world) {

@@ -3,7 +3,7 @@
 DECLARE_DELEGATE_OneParam(FAnim8Sample, float)
 DECLARE_DELEGATE(FAnim8Done)
 
-DASKOMBINAT_API class FInterpolator {
+class DASKOMBINAT_API FInterpolator {
 private:
     float startTime;
     float duration01;
@@ -18,6 +18,7 @@ private:
     UWorld* world;
     
 public:
+    FInterpolator();
     FInterpolator(float duration, UWorld* world);
     FInterpolator(float forwardDuration, float backwardDuration, UWorld* world);
 

@@ -16,6 +16,7 @@ private:
     bool directionIsForward;
     FInterpolator interpolator;
 public:
+    FAnim8Action();
     FAnim8Action(bool directionIsForward, FInterpolator interpolator, FAnim8Sample onSample, FAnim8Done onFinish);
     virtual void PreTick() override;
     virtual ~FAnim8Action() override;

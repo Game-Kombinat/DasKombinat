@@ -3,6 +3,9 @@
 
 #include "Anim8Action.h"
 
+FAnim8Action::FAnim8Action(): directionIsForward(true), interpolator(FInterpolator()) {
+}
+
 FAnim8Action::FAnim8Action(bool directionIsForward, FInterpolator interpolator, FAnim8Sample onSample, FAnim8Done onFinish) {
     this->directionIsForward = directionIsForward;
     this->onSample = onSample;

@@ -3,6 +3,8 @@
 
 #include "CoroutineManager.h"
 
+UCoroutineManager* UCoroutineManager::instance = nullptr;
+
 UCoroutineManager::~UCoroutineManager() {
     for (auto r : runningRoutines) {
         if (r) {

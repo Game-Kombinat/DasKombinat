@@ -4,8 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Coroutine.h"
-#include "UObject/Object.h"
-#include "CoroutineManager.generated.h"
 
 
 /**
@@ -13,15 +11,14 @@
  * Bit like the latent action manager but without the blueprint shebang attached.
  * Just raw and simple
  */
-UCLASS()
-class DASKOMBINAT_API UCoroutineManager : public UObject {
-    GENERATED_BODY()
+class DASKOMBINAT_API UCoroutineManager {
+    
     static UCoroutineManager* instance;
     TArray<FCoroutine*> runningRoutines;
     TArray<FCoroutine*> scheduledAdds;
     TArray<FCoroutine*> scheduledRemovals;
 public:
-    virtual ~UCoroutineManager() override;
+    ~UCoroutineManager();
     void Prepare();
 
     void Add(FCoroutine* coroutine);
