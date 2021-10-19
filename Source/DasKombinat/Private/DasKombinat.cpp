@@ -1,7 +1,6 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "DasKombinat.h"
-
 #define LOCTEXT_NAMESPACE "FDasKombinatModule"
 
 void FDasKombinatModule::StartupModule() {
