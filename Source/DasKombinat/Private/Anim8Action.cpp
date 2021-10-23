@@ -25,11 +25,23 @@ void FAnim8Action::PreTick() {
 FAnim8Action::~FAnim8Action() {
 }
 
-bool FAnim8Action::Tick() {
+void FAnim8Action::Tick() {
     onSample.ExecuteIfBound(interpolator.Sample());
     if (interpolator.IsDone() && onFinish.IsBound()) {
         
         onFinish.Execute();
     }
+}
+
+bool FAnim8Action::IsDone() {
     return interpolator.IsDone();
+}
+
+void FAnim8Action::ForceEnd() {
+    if (directionIsForward) {
+        interpolator.ForceForward();
+    }
+    else {
+        interpolator.ForceBackward();
+    }
 }

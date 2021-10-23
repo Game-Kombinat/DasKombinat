@@ -20,5 +20,7 @@ public:
     FAnim8Action(bool directionIsForward, FInterpolator interpolator, FAnim8Sample onSample, FAnim8Done onFinish);
     virtual void PreTick() override;
     virtual ~FAnim8Action() override;
-    virtual bool Tick() override;
+    virtual void Tick() override;
+    virtual bool IsDone() override;
+    virtual void ForceEnd() override;
 };

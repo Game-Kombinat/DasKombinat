@@ -21,7 +21,7 @@ public:
     ~UCoroutineManager();
     void Prepare();
 
-    void Add(FCoroutine* coroutine);
+    class FCoroutineControl Add(FCoroutine* coroutine);
 
     void Tick();
 

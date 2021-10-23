@@ -3,6 +3,8 @@
 
 #include "CoroutineManager.h"
 
+#include "CoroutineControl.h"
+
 UCoroutineManager* UCoroutineManager::instance = nullptr;
 
 UCoroutineManager::~UCoroutineManager() {
@@ -30,12 +32,14 @@ void UCoroutineManager::Prepare() {
     instance = this;
 }
 
-void UCoroutineManager::Add(FCoroutine* coroutine) {
+FCoroutineControl UCoroutineManager::Add(FCoroutine* coroutine) {
     if (!coroutine) {
-        return;
+        return FCoroutineControl(nullptr);
     }
 
     scheduledAdds.Add(coroutine);
+
+    return FCoroutineControl(coroutine);
 }
 
 void UCoroutineManager::Tick() {
@@ -48,7 +52,8 @@ void UCoroutineManager::Tick() {
 
     // run routines
     for (auto r : runningRoutines) {
-        if (r->Tick()) {
+        r->Tick();
+        if (r->IsDone()) {
             scheduledRemovals.Add(r);
         }
     }
@@ -56,7 +61,7 @@ void UCoroutineManager::Tick() {
     // process routines that need to be removed
     for (auto r : scheduledRemovals) {
         runningRoutines.Remove(r);
-        r->PostTick();
+        r->Cleanup();
         delete r;
     }
     scheduledRemovals.Empty();

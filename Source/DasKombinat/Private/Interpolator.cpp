@@ -1,6 +1,7 @@
 ﻿#include "Interpolator.h"
 
 #include "Anim8Action.h"
+#include "CoroutineControl.h"
 #include "CoroutineManager.h"
 #include "Kismet/KismetMathLibrary.h"
 
@@ -73,13 +74,20 @@ float FInterpolator::SampleTime() const {
     return FMath::Clamp(world->GetTimeSeconds() - startTime, 0.0f, Duration());
 }
 
-void FInterpolator::Anim8(UWorld* world, float duration, bool playForward, FAnim8Sample onSample, FAnim8Done onFinish) {
-    UCoroutineManager::Instance()->Add(new FAnim8Action(playForward, FInterpolator(duration, world), onSample, onFinish));
+FCoroutineControl FInterpolator::Anim8(UWorld* world, float duration, bool playForward, FAnim8Sample onSample,
+                                       FAnim8Done onFinish) {
+    return UCoroutineManager::Instance()->Add(new FAnim8Action(playForward, FInterpolator(duration, world), onSample, onFinish));
 }
 
-// void FInterpolator::Anim8(UWorld* world, float duration, bool playForward, FAnim8Sample onSample, FAnim8Done onFinish) {
-//     UCoroutineManager::Instance()->Add(new FAnim8Action(playForward, FInterpolator(duration, world), onSample, onFinish));
-// }
+FCoroutineControl FInterpolator::Anim8(UWorld* world, float duration, bool playForward,
+                                       TFunctionRef<void (float)> onSample, TFunctionRef<void ()> onFinish) {
+    FAnim8Sample sample;
+    sample.BindLambda(onSample);
+
+    FAnim8Done done;
+    done.BindLambda(onFinish);
+    return UCoroutineManager::Instance()->Add(new FAnim8Action(playForward, FInterpolator(duration, world), sample, done));
+}
 
 void FInterpolator::Force(float target) {
     if (!world) {

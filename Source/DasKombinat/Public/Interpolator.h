@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "CoroutineControl.h"
 
 DECLARE_DELEGATE_OneParam(FAnim8Sample, float)
 DECLARE_DELEGATE(FAnim8Done)
@@ -50,7 +51,17 @@ public:
 
     float SampleTime() const;
 
-    static void Anim8(UWorld* world, float duration, bool playForward, FAnim8Sample onSample, FAnim8Done onFinish);
+    /**
+     * Start linear interpolation on the game thread. Callbacks are delegates.
+     */
+    static FCoroutineControl Anim8(UWorld* world, float duration, bool playForward, FAnim8Sample onSample,
+                                   FAnim8Done onFinish);
+
+    /**
+     * Start linear interpolation on the game thread. Callbacks are lambdas.
+     */
+    static FCoroutineControl Anim8(UWorld* world, float duration, bool playForward, TFunctionRef<void (float)> onSample,
+                                   TFunctionRef<void ()> onFinish);
     
 private:
     void Force(float target);

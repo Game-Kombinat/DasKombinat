@@ -10,17 +10,30 @@ public:
     /**
      * Called automatically before the first Tick() call.
      */
-    virtual void PreTick() {}
-    /**
-     * Ticking.
-     * Return true to make it stop ticking and be removed from the coroutine manager.
-     * Returning false will make it tick again next frame.
-     */
-    virtual bool Tick() = 0;
+    virtual void PreTick() {
+    }
 
     /**
-     * Called automatically after the Tick() call returned true the first time.
+     * Ticking.
+     * Called once per frame on the main thread.
+     */
+    virtual void Tick() = 0;
+
+    /**
+     * Called after Tick, 
+     */
+    virtual bool IsDone() = 0;
+
+    /**
+     * If supported, implement logic to force an early ending
+     * of the coroutine.
+     */
+    virtual void ForceEnd() = 0;
+
+    /**
+     * Called automatically after the coroutine notifies that it's done via IsDone()
      * After that the coroutine is discarded.
      */
-    virtual void PostTick() {}
+    virtual void Cleanup() {
+    }
 };
