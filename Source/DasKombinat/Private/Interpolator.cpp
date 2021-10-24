@@ -10,15 +10,13 @@ FInterpolator::FInterpolator(): startTime(0), stateA(0), stateB(0), currentValue
     duration01 = duration10 = 0;
 }
 
-FInterpolator::FInterpolator(float duration, UWorld* world): startTime(0), stateA(0), stateB(0), currentValue(0),
-                                                             timeOfPause(0) {
+FInterpolator::FInterpolator(float duration, UWorld* world): startTime(0), stateA(0), stateB(0), currentValue(0), timeOfPause(0) {
     duration01 = duration;
     duration10 = duration;
     this->world = world;
 }
 
-FInterpolator::FInterpolator(float forwardDuration, float backwardDuration, UWorld* world): startTime(0), stateA(0),
-    stateB(0), currentValue(0), timeOfPause(0) {
+FInterpolator::FInterpolator(float forwardDuration, float backwardDuration, UWorld* world): startTime(0), stateA(0), stateB(0), currentValue(0), timeOfPause(0) {
     duration01 = forwardDuration;
     duration10 = backwardDuration;
     this->world = world;
@@ -79,8 +77,7 @@ FCoroutineControl FInterpolator::Anim8(UWorld* world, float duration, bool playF
     return UCoroutineManager::Instance()->Add(new FAnim8Action(playForward, FInterpolator(duration, world), onSample, onFinish));
 }
 
-FCoroutineControl FInterpolator::Anim8(UWorld* world, float duration, bool playForward,
-                                       TFunctionRef<void (float)> onSample, TFunctionRef<void ()> onFinish) {
+FCoroutineControl FInterpolator::Anim8(UWorld* world, float duration, bool playForward, TFunctionRef<void (float)> onSample, TFunctionRef<void()> onFinish) {
     FAnim8Sample sample;
     sample.BindLambda(onSample);
 
@@ -112,6 +109,6 @@ void FInterpolator::StartFade(float a, float b, bool reset) {
         float time = world->GetTimeSeconds();
         //If the interpolator gets interrupted in the middle of a fading, continue at the same position
         startTime = FMath::Lerp(time, time - Duration(),
-                                UKismetMathLibrary::NormalizeToRange(currentValue, stateA, stateB));
+            UKismetMathLibrary::NormalizeToRange(currentValue, stateA, stateB));
     }
 }

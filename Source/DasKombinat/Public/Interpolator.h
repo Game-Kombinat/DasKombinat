@@ -60,8 +60,7 @@ public:
     /**
      * Start linear interpolation on the game thread. Callbacks are lambdas.
      */
-    static FCoroutineControl Anim8(UWorld* world, float duration, bool playForward, TFunctionRef<void (float)> onSample,
-                                   TFunctionRef<void ()> onFinish);
+    static FCoroutineControl Anim8(UWorld* world, float duration, bool playForward, TFunctionRef<void (float)> onSample, TFunctionRef<void()> onFinish);
     
 private:
     void Force(float target);
