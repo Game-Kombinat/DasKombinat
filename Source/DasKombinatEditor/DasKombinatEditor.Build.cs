@@ -1,10 +1,7 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+﻿using UnrealBuildTool;
 
-using UnrealBuildTool;
-
-public class DasKombinat : ModuleRules
-{
-	public DasKombinat(ReadOnlyTargetRules Target) : base(Target)
+public class DasKombinatEditor : ModuleRules {
+	public DasKombinatEditor(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 		
@@ -12,39 +9,39 @@ public class DasKombinat : ModuleRules
 			new string[] {
 				// ... add public include paths required here ...
 			}
-			);
+		);
 				
 		
 		PrivateIncludePaths.AddRange(
 			new string[] {
 				// ... add other private include paths required here ...
 			}
-			);
+		);
 			
 		
 		PublicDependencyModuleNames.AddRange(
-			new string[]
-			{
+			new string[] {
 				"Core",
-				"Engine"
-				// ... add other public dependencies that you statically link with here ...
+				"Engine",
+				"DasKombinat"
 			}
-			);
-			
-		
+		);
+
+
 		PrivateDependencyModuleNames.AddRange(
-			new string[]
-			{
+			new string[] {
 				"Core",
 				"CoreUObject",
 				"Engine",
 				"InputCore",
 				"Slate",
 				"SlateCore",
-				"UMG"
+				"UMG",
+				//"DasKombinat",
+				"UnrealEd"
 				// ... add private dependencies that you statically link with here ...	
 			}
-			);
+		);
 		
 		
 		DynamicallyLoadedModuleNames.AddRange(
@@ -52,6 +49,6 @@ public class DasKombinat : ModuleRules
 			{
 				// ... add any modules that your module loads dynamically here ...
 			}
-			);
+		);
 	}
 }

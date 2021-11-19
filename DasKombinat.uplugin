@@ -19,6 +19,11 @@
 			"Name": "DasKombinat",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "DasKombinatEditor",
+			"Type": "Editor",
+			"LoadingPhase": "Default"
 		}
 	]
 }
