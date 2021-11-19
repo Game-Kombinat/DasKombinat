@@ -37,7 +37,7 @@ public class DasKombinatEditor : ModuleRules {
 				"Slate",
 				"SlateCore",
 				"UMG",
-				//"DasKombinat",
+				"DasKombinat",
 				"UnrealEd"
 				// ... add private dependencies that you statically link with here ...	
 			}

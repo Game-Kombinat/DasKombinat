@@ -4,12 +4,11 @@
 
 #include "CoreMinimal.h"
 
-class IAssetTypeActions;
 /**
  * 
  */
 class DASKOMBINATEDITOR_API FDasKombinatEditorModule : public IModuleInterface {
-    TSharedRef<IAssetTypeActions> dataContextType;
+    TSharedRef<class FGameDataContextAssetActions> dataContextType;
 public:
     /** IModuleInterface implementation */
     virtual void StartupModule() override;
