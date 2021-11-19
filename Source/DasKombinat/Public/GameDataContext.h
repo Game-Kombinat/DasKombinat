@@ -39,7 +39,7 @@ struct FGameDataContextKey {
 /**
  * 
  */
-UCLASS(ClassGroup = GameKombinat, Category="GameKombinat")
+UCLASS(ClassGroup = GameKombinat, Category="GameKombinat", BlueprintType)
 class DASKOMBINAT_API UGameDataContext : public UObject {
     GENERATED_BODY()
     TArray<FGameDataContextKey> consolidatedKeyList;
@@ -58,14 +58,14 @@ protected:
 public:
     UFUNCTION(BlueprintCallable)
     /** Returns the general truthyness of the value at this key. That means it returns true if the value is greater than 0 */
-    bool GetTruthyness(FGameDataContextKey key);
+    bool GetTruthyness(const FGameDataContextKey& key) const;
 
     UFUNCTION(BlueprintCallable)
     /** Used in runtime to get a value from the context. */
-    int32 GetValue(FGameDataContextKey key) const;
+    int32 GetValue(const FGameDataContextKey& key) const;
 
     /** Used in runtime to override a value in the context. This can not add new values!*/
-    void SetValue(FGameDataContextKey key) const;
+    void SetValue(const FGameDataContextKey& key) const;
 
     /** Returns a copy of the game data context keys within this context. This will merge parent keys into one list, if any. It's for editor purposes. */
     TArray<FGameDataContextKey> GetKeyList();

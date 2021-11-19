@@ -3,7 +3,7 @@
 
 #include "GameDataContext.h"
 
-bool UGameDataContext::GetTruthyness(const FGameDataContextKey key) {
+bool UGameDataContext::GetTruthyness(const FGameDataContextKey& key) const {
     FGameDataContextKey out;
     if (FindEntry(key, out)) {
         return out.value > 0;
@@ -11,7 +11,7 @@ bool UGameDataContext::GetTruthyness(const FGameDataContextKey key) {
     return false;
 }
 
-int32 UGameDataContext::GetValue(const FGameDataContextKey key) const {
+int32 UGameDataContext::GetValue(const FGameDataContextKey& key) const {
     FGameDataContextKey out;
     if (FindEntry(key, out)) {
         return out.value;
@@ -19,7 +19,7 @@ int32 UGameDataContext::GetValue(const FGameDataContextKey key) const {
     return -1;
 }
 
-void UGameDataContext::SetValue(const FGameDataContextKey key) const {
+void UGameDataContext::SetValue(const FGameDataContextKey& key) const {
     const int32 idx = GetIndex(key);
     if (idx != INDEX_NONE) {
         runtimeInstance->data[idx] = key;

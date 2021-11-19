@@ -8,8 +8,10 @@
  * 
  */
 class DASKOMBINATEDITOR_API FDasKombinatEditorModule : public IModuleInterface {
-    TSharedRef<class FGameDataContextAssetActions> dataContextType;
+    TSharedRef<class IAssetTypeActions> dataContextType;
+    TArray<FName> customClassLayouts;
 public:
+    FDasKombinatEditorModule();
     /** IModuleInterface implementation */
     virtual void StartupModule() override;
     virtual void ShutdownModule() override;

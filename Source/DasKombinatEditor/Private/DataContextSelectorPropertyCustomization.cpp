@@ -7,6 +7,7 @@
 #include "DetailWidgetRow.h"
 #include "GameDataContext.h"
 #include "Logging.h"
+#include "Engine/LevelScriptActor.h"
 #include "Widgets/Layout/SWrapBox.h"
 
 
@@ -20,7 +21,7 @@ void FDataContextSelectorPropertyCustomization::CustomizeHeader(TSharedRef<IProp
     propertyHandle = StructPropertyHandle;
     EnsureNodeData();
 
-    if (!outerContainer) {
+    if (!outerContainer || !outerContainer->GetDataContext()) {
         HeaderRow.NameContent()[
                 propertyHandle->CreatePropertyNameWidget()
             ]
@@ -60,7 +61,7 @@ void FDataContextSelectorPropertyCustomization::CustomizeChildren(TSharedRef<IPr
 }
 
 FDataContextSelectorPropertyCustomization::FItemType FDataContextSelectorPropertyCustomization::GetInitiallySelectedObject() {
-    if (!outerContainer) {
+    if (!outerContainer || !outerContainer->GetDataContext()) {
         return nullptr;
     }
     if (propertyHandle->GetNumPerObjectValues() > 1) {
@@ -88,7 +89,7 @@ FDataContextSelectorPropertyCustomization::FItemType FDataContextSelectorPropert
 }
 
 void FDataContextSelectorPropertyCustomization::CollectDataContextKeys() {
-    if (!outerContainer) {
+    if (!outerContainer || !outerContainer->GetDataContext()) {
         return;
     }
     auto dc = outerContainer->GetDataContext()->GetKeyList();
@@ -120,10 +121,31 @@ void FDataContextSelectorPropertyCustomization::OnSelectionChanged(const FItemTy
 void FDataContextSelectorPropertyCustomization::EnsureNodeData() {
     if (!outerContainer) {
         TArray<UObject*> outers;
+        TArray<UPackage*> packages;
         propertyHandle->GetOuterObjects(outers);
+        propertyHandle->GetOuterPackages(packages);
+        
         for (const auto outer : outers) {
-            outerContainer = Cast<IDataContextContainer>(outer);
+            // this is very rough but its the best we can do without tying data context to specific object types.
+            const auto world = outer->GetWorld();
+            const ALevelScriptActor* level = Cast<ALevelScriptActor>(outer);
+            if (!outerContainer) {
+                LOG_INFO("Trying data context from outer container.");
+                outerContainer = Cast<IDataContextContainer>(outer);
+            }
+            
+            if (!outerContainer && world) {
+                LOG_INFO("Trying data context from world settings.");
+                outerContainer = reinterpret_cast<IDataContextContainer*>(world->GetWorldSettings());
+            }
+            
+            if (!outerContainer && level) {
+                LOG_INFO("Trying data context from level world settings.");
+                outerContainer = reinterpret_cast<IDataContextContainer*>(level->GetWorldSettings());
+            }
+            
             if (outerContainer) {
+                LOG_INFO("Found data context");
                 break;
             }
         }
