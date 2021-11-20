@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "DataContextContainer.h"
 
 struct FGameDataContextKey;
 /**
@@ -11,7 +12,7 @@ struct FGameDataContextKey;
 class DASKOMBINATEDITOR_API FDataContextSelectorPropertyCustomization : public IPropertyTypeCustomization {
     typedef TSharedPtr<FGameDataContextKey> FItemType;
     TArray<FItemType> keyList;
-    class IDataContextContainer* outerContainer = nullptr;
+    IDataContextContainer* outerContainer = nullptr;
 public:
     static TSharedRef<IPropertyTypeCustomization> MakeInstance() {
         return MakeShareable(new FDataContextSelectorPropertyCustomization());

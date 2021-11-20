@@ -8,10 +8,12 @@
 #include "GameDataContext.h"
 #include "Logging.h"
 #include "Engine/LevelScriptActor.h"
+#include "GameFramework/WorldSettings.h"
 #include "Widgets/Layout/SWrapBox.h"
 
 
 FDataContextSelectorPropertyCustomization::FDataContextSelectorPropertyCustomization() {
+    outerContainer = nullptr;
 }
 
 void FDataContextSelectorPropertyCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> StructPropertyHandle,
@@ -119,7 +121,7 @@ void FDataContextSelectorPropertyCustomization::OnSelectionChanged(const FItemTy
 }
 
 void FDataContextSelectorPropertyCustomization::EnsureNodeData() {
-    if (!outerContainer) {
+    if (!outerContainer || !outerContainer->GetDataContext()) {
         TArray<UObject*> outers;
         TArray<UPackage*> packages;
         propertyHandle->GetOuterObjects(outers);
@@ -128,20 +130,40 @@ void FDataContextSelectorPropertyCustomization::EnsureNodeData() {
         for (const auto outer : outers) {
             // this is very rough but its the best we can do without tying data context to specific object types.
             const auto world = outer->GetWorld();
-            const ALevelScriptActor* level = Cast<ALevelScriptActor>(outer);
+            ALevelScriptActor* levelActor = Cast<ALevelScriptActor>(outer);
+            ULevel* level = nullptr;
+            if (world) {
+                level = world->GetCurrentLevel();
+            }
+            
             if (!outerContainer) {
                 LOG_INFO("Trying data context from outer container.");
-                outerContainer = Cast<IDataContextContainer>(outer);
+                if (outer->GetClass()->ImplementsInterface(UDataContextContainer::StaticClass())) {
+                    outerContainer = Cast<IDataContextContainer>(outer);
+                }
             }
             
             if (!outerContainer && world) {
                 LOG_INFO("Trying data context from world settings.");
-                outerContainer = reinterpret_cast<IDataContextContainer*>(world->GetWorldSettings());
+                const auto settings = world->GetWorldSettings();
+                if (settings && settings->GetClass()->ImplementsInterface(UDataContextContainer::StaticClass())) {
+                    outerContainer = Cast<IDataContextContainer>(settings);
+                }
+            }
+            
+            if (!outerContainer && levelActor) {
+                LOG_INFO("Trying data context from level actor via outer.");
+                if (levelActor->GetClass()->ImplementsInterface(UDataContextContainer::StaticClass())) {
+                    outerContainer = Cast<IDataContextContainer>(levelActor);
+                }
             }
             
             if (!outerContainer && level) {
-                LOG_INFO("Trying data context from level world settings.");
-                outerContainer = reinterpret_cast<IDataContextContainer*>(level->GetWorldSettings());
+                LOG_INFO("Trying data context from level actor via world.");
+                levelActor = level->GetLevelScriptActor();
+                if (levelActor->GetClass()->ImplementsInterface(UDataContextContainer::StaticClass())) {
+                    outerContainer = Cast<IDataContextContainer>(levelActor);
+                }
             }
             
             if (outerContainer) {
