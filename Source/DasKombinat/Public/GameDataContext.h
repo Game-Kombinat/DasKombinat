@@ -9,13 +9,14 @@
 USTRUCT(BlueprintType)
 struct FGameDataContextKey {
     GENERATED_BODY()
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
     FName name;
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
     int32 value;
     // used to identify keys instead of display name because it may change.
     // and we sure don't want shit to break when a name has been changed.
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, SaveGame)
     FGuid guid;
 
     friend bool operator==(const FGameDataContextKey& lhs, const FGameDataContextKey& rhs) {
@@ -51,9 +52,9 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     TArray<FGameDataContextKey> data;
 
-    /** Is spawned with a world as parent and is therefore removed when the world is removed. */
-    UPROPERTY(VisibleAnywhere, SaveGame, Transient)
-    TWeakObjectPtr<UGameDataContext> runtimeInstance;
+    /** This will be part of the asset but the data in it is actually volatile. I can see no other solution around it right now. */
+    UPROPERTY(VisibleAnywhere, SaveGame)
+    TArray<FGameDataContextKey> runtimeData;
 
 public:
     UFUNCTION(BlueprintCallable)
@@ -65,7 +66,7 @@ public:
     int32 GetValue(const FGameDataContextKey& key) const;
 
     /** Used in runtime to override a value in the context. This can not add new values!*/
-    void SetValue(const FGameDataContextKey& key) const;
+    void SetValue(const FGameDataContextKey& key);
 
     /** Returns a copy of the game data context keys within this context. This will merge parent keys into one list, if any. It's for editor purposes. */
     TArray<FGameDataContextKey> GetKeyList();
@@ -73,14 +74,12 @@ public:
     /** Call in editor to invalidate the key list cache of this data context and all its parents. */
     void InvalidateKeyCache();
 
-    void PrepareRuntimeData(const TWeakObjectPtr<UObject>& worldContext);
+    void PrepareRuntimeData();
 
     UGameDataContext* GetParent() const;
 
 private:
     bool FindEntry(FGameDataContextKey key, FGameDataContextKey& out) const;
-
-    void InternalSpawnRuntimeData(const TWeakObjectPtr<UObject>& worldContext);
 
     FORCEINLINE int32 GetIndex(const FGameDataContextKey& key) const;
 
