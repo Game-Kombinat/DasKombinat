@@ -95,3 +95,7 @@ void UGameDataContext::PrepareRuntimeData(const TWeakObjectPtr<UObject>& worldCo
         InternalSpawnRuntimeData(worldContext);
     }
 }
+
+UGameDataContext* UGameDataContext::GetParent() const {
+    return parent;
+}

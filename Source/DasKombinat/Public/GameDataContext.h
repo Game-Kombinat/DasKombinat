@@ -52,7 +52,7 @@ protected:
     TArray<FGameDataContextKey> data;
 
     /** Is spawned with a world as parent and is therefore removed when the world is removed. */
-    UPROPERTY(VisibleAnywhere, Transient)
+    UPROPERTY(VisibleAnywhere, SaveGame, Transient)
     TWeakObjectPtr<UGameDataContext> runtimeInstance;
 
 public:
@@ -74,6 +74,8 @@ public:
     void InvalidateKeyCache();
 
     void PrepareRuntimeData(const TWeakObjectPtr<UObject>& worldContext);
+
+    UGameDataContext* GetParent() const;
 
 private:
     bool FindEntry(FGameDataContextKey key, FGameDataContextKey& out) const;
