@@ -61,9 +61,17 @@ public:
     /** Returns the general truthyness of the value at this key. That means it returns true if the value is greater than 0 */
     bool GetTruthyness(const FGameDataContextKey& key) const;
 
-    UFUNCTION(BlueprintCallable)
     /** Used in runtime to get a value from the context. */
     int32 GetValue(const FGameDataContextKey& key) const;
+
+    /** Used in runtime to get a value from the context. */
+    int32 GetValue(const FString& key) const;
+
+    // need a k2_ because of overloads
+    UFUNCTION(BlueprintCallable, meta=(DisplayName="Get Value"))
+    /** Used in runtime to get a value from the context. */
+    int32 K2_GetValue(const FGameDataContextKey& key) const;
+    
 
     /** Used in runtime to override a value in the context. This can not add new values!*/
     void SetValue(const FGameDataContextKey& key);

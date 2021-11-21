@@ -3,6 +3,9 @@
 
 #include "GameDataContext.h"
 
+#include "Logging.h"
+
+
 bool UGameDataContext::GetTruthyness(const FGameDataContextKey& key) const {
     FGameDataContextKey out;
     if (FindEntry(key, out)) {
@@ -18,6 +21,22 @@ int32 UGameDataContext::GetValue(const FGameDataContextKey& key) const {
     }
     return -1;
 }
+
+int32 UGameDataContext::GetValue(const FString& key) const {
+    for (int i = 0; i < runtimeData.Num(); ++i) {
+        auto realKey = runtimeData[i];
+        if (realKey.name.IsEqual(FName(key))) {
+            return realKey.value;
+        }
+    }
+    LOG_WARNING("DataContext: There is no key labelled %s", *key);
+    return -1;
+}
+
+int32 UGameDataContext::K2_GetValue(const FGameDataContextKey& key) const {
+    return GetValue(key);
+}
+
 
 void UGameDataContext::SetValue(const FGameDataContextKey& key) {
     const int32 idx = GetIndex(key);
