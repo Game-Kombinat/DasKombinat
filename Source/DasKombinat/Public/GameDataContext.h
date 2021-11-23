@@ -75,6 +75,7 @@ public:
 
     /** Used in runtime to override a value in the context. This can not add new values!*/
     void SetValue(const FGameDataContextKey& key);
+    void SetValue(const FString& key, int value);
 
     /** Returns a copy of the game data context keys within this context. This will merge parent keys into one list, if any. It's for editor purposes. */
     TArray<FGameDataContextKey> GetKeyList();

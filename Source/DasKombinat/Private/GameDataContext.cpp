@@ -48,6 +48,18 @@ void UGameDataContext::SetValue(const FGameDataContextKey& key) {
     }
 }
 
+void UGameDataContext::SetValue(const FString& key, int value) {
+    for (int i = 0; i < runtimeData.Num(); ++i) {
+        auto realKey = runtimeData[i];
+        if (realKey.name.IsEqual(FName(key))) {
+            realKey.value = value;
+            SetValue(realKey);
+            return;
+        }
+    }
+    LOG_WARNING("DataContext: There is no key labelled %s", *key);
+}
+
 TArray<FGameDataContextKey> UGameDataContext::GetKeyList() {
     if (!keyListGenerated) {
         keyListGenerated = true;
