@@ -77,6 +77,9 @@ public:
     void SetValue(const FGameDataContextKey& key);
     void SetValue(const FString& key, int value);
 
+    /** Sets a value to this context and a key with the given name. Creates a new key that's only part of the runtime data when key not found. */
+    void ForceSetValue(const FString& key, int value);
+
     /** Returns a copy of the game data context keys within this context. This will merge parent keys into one list, if any. It's for editor purposes. */
     TArray<FGameDataContextKey> GetKeyList();
 

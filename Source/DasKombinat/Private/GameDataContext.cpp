@@ -3,6 +3,7 @@
 
 #include "GameDataContext.h"
 
+#include "Interpolation.h"
 #include "Logging.h"
 
 
@@ -58,6 +59,19 @@ void UGameDataContext::SetValue(const FString& key, int value) {
         }
     }
     LOG_WARNING("DataContext: There is no key labelled %s", *key);
+}
+
+void UGameDataContext::ForceSetValue(const FString& key, int value) {
+    for (int i = 0; i < runtimeData.Num(); ++i) {
+        auto realKey = runtimeData[i];
+        if (realKey.name.IsEqual(FName(key))) {
+            realKey.value = value;
+            SetValue(realKey);
+            return;
+        }
+    }
+    runtimeData.Add(FGameDataContextKey(FName(key), value));
+    LOG_WARNING("DataContext: New key added to runtime data: %s", *key);
 }
 
 TArray<FGameDataContextKey> UGameDataContext::GetKeyList() {
