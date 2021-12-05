@@ -74,7 +74,8 @@ float FInterpolator::SampleTime() const {
 
 FCoroutineControl FInterpolator::Anim8(UWorld* world, float duration, bool playForward, FAnim8Sample onSample,
                                        FAnim8Done onFinish) {
-    return UCoroutineManager::Instance()->Add(new FAnim8Action(playForward, FInterpolator(duration, world), onSample, onFinish));
+    const auto shared = MakeShareable(new FAnim8Action(playForward, FInterpolator(duration, world), onSample, onFinish));
+    return UCoroutineManager::Instance()->Add(shared);
 }
 
 FCoroutineControl FInterpolator::Anim8(UWorld* world, float duration, bool playForward, TFunctionRef<void (float)> onSample, TFunctionRef<void()> onFinish) {
@@ -83,7 +84,8 @@ FCoroutineControl FInterpolator::Anim8(UWorld* world, float duration, bool playF
 
     FAnim8Done done;
     done.BindLambda(onFinish);
-    return UCoroutineManager::Instance()->Add(new FAnim8Action(playForward, FInterpolator(duration, world), sample, done));
+    const auto shared = MakeShareable(new FAnim8Action(playForward, FInterpolator(duration, world), sample, done));
+    return UCoroutineManager::Instance()->Add(shared);
 }
 
 void FInterpolator::Force(float target) {

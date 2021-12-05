@@ -14,6 +14,7 @@ private:
     FAnim8Sample onSample;
     FAnim8Done onFinish;
     bool directionIsForward;
+    bool forceDone;
     FInterpolator interpolator;
 public:
     FAnim8Action();

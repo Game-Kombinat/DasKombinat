@@ -3,7 +3,11 @@
 
 #include "CoroutineControl.h"
 
-FCoroutineControl::FCoroutineControl(FCoroutine* routine) {
+FCoroutineControl::FCoroutineControl() {
+    handle = nullptr;
+}
+
+FCoroutineControl::FCoroutineControl(TSharedPtr<FCoroutine> routine) {
     handle = routine;
 }
 

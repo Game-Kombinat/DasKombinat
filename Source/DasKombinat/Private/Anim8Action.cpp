@@ -3,7 +3,7 @@
 
 #include "Anim8Action.h"
 
-FAnim8Action::FAnim8Action(): directionIsForward(true), interpolator(FInterpolator()) {
+FAnim8Action::FAnim8Action(): directionIsForward(true), forceDone(false), interpolator(FInterpolator()) {
 }
 
 FAnim8Action::FAnim8Action(bool directionIsForward, FInterpolator interpolator, FAnim8Sample onSample, FAnim8Done onFinish) {
@@ -11,6 +11,7 @@ FAnim8Action::FAnim8Action(bool directionIsForward, FInterpolator interpolator, 
     this->onSample = onSample;
     this->onFinish = onFinish;
     this->interpolator = interpolator;
+    forceDone = false;
 }
 
 void FAnim8Action::PreTick() {
@@ -34,14 +35,15 @@ void FAnim8Action::Tick() {
 }
 
 bool FAnim8Action::IsDone() {
-    return interpolator.IsDone();
+    return interpolator.IsDone() || forceDone;
 }
 
 void FAnim8Action::ForceEnd() {
-    if (directionIsForward) {
-        interpolator.ForceForward();
-    }
-    else {
-        interpolator.ForceBackward();
-    }
+    forceDone = true;
+    // if (directionIsForward) {
+    //     interpolator.ForceForward();
+    // }
+    // else {
+    //     interpolator.ForceBackward();
+    // }
 }

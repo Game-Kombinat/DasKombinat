@@ -10,10 +10,11 @@
  */
 class DASKOMBINAT_API FCoroutineControl {
 private:
-    FCoroutine* handle;
+    TSharedPtr<FCoroutine> handle;
     
 public:
-    explicit FCoroutineControl(FCoroutine* routine);
+    explicit FCoroutineControl();
+    explicit FCoroutineControl(TSharedPtr<FCoroutine> routine);
     ~FCoroutineControl();
 
     bool IsDone() const;
