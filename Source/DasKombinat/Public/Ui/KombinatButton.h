@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Components/Button.h"
-#include "UObject/Object.h"
 #include "KombinatButton.generated.h"
 
 /**
@@ -18,8 +17,22 @@ protected:
     FButtonStyle normal;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Kombinat Button")
     FButtonStyle focus;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Kombinat Button")
+    class USoundCue* clickCue;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Kombinat Button")
+    class USoundCue* hoverCue;
+
+    bool isFocused;
 public:
     void Start();
+    virtual TSharedRef<SWidget> RebuildWidget() override;
+
+    UFUNCTION()
+    void KombinatHandleClicked();
+    UFUNCTION()
+    void KombinatHandleHover();
 private:
     UFUNCTION()
     void CheckFocus();
