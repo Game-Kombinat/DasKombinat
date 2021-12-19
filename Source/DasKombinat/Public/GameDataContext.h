@@ -77,6 +77,13 @@ public:
     void SetValue(const FGameDataContextKey& key);
     void SetValue(const FString& key, int value);
 
+    /** Set values from blueprints. For more obvious use, we explicitly pass a value as second argument. Normally we'd read the value of the context key but it's a little obtuse */
+    UFUNCTION(BlueprintCallable, meta=(DisplayName="Set Value"))
+    void K2_SetValue(const FGameDataContextKey& key, int value);
+    /** Set values from blueprints. For more obvious use, we explicitly pass a value as second argument. Normally we'd read the value of the context key but it's a little obtuse */
+    UFUNCTION(BlueprintCallable, meta=(DisplayName="Add Value"))
+    void K2_AddValue(const FGameDataContextKey& key, int value);
+
     /** Sets a value to this context and a key with the given name. Creates a new key that's only part of the runtime data when key not found. */
     void ForceSetValue(const FString& key, int value);
 

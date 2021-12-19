@@ -61,6 +61,15 @@ void UGameDataContext::SetValue(const FString& key, int value) {
     LOG_WARNING("DataContext: There is no key labelled %s", *key);
 }
 
+void UGameDataContext::K2_SetValue(const FGameDataContextKey& key, int value) {
+    SetValue(key.name.ToString(), value);
+}
+
+void UGameDataContext::K2_AddValue(const FGameDataContextKey& key, const int value) {
+    const int val = GetValue(key);
+    K2_SetValue(key, val + value);
+}
+
 void UGameDataContext::ForceSetValue(const FString& key, int value) {
     for (int i = 0; i < runtimeData.Num(); ++i) {
         auto realKey = runtimeData[i];
