@@ -9,19 +9,29 @@
 
 void UKombinatButton::Start() {
     UKismetSystemLibrary::K2_SetTimer(this, "CheckFocus", 0.01f, true);
-    
 }
 
 TSharedRef<SWidget> UKombinatButton::RebuildWidget() {
     auto btn = Super::RebuildWidget();
 
-    // in case this was already added, remove it
+    // in case this was already added and not removed, remove it again.
     OnClicked.RemoveDynamic(this, &UKombinatButton::KombinatHandleClicked);
     OnHovered.RemoveDynamic(this, &UKombinatButton::KombinatHandleHover);
     
     OnClicked.AddDynamic(this, &UKombinatButton::KombinatHandleClicked);
     OnHovered.AddDynamic(this, &UKombinatButton::KombinatHandleHover);
+    Start();
     return btn;
+}
+
+void UKombinatButton::BeginDestroy() {
+    if (IsValid(this)) {
+        UKismetSystemLibrary::K2_ClearTimer(this, "CheckFocus");
+        OnClicked.RemoveDynamic(this, &UKombinatButton::KombinatHandleClicked);
+        OnHovered.RemoveDynamic(this, &UKombinatButton::KombinatHandleHover);
+    }
+    
+    Super::BeginDestroy();
 }
 
 void UKombinatButton::KombinatHandleClicked() {

@@ -26,8 +26,11 @@ protected:
 
     bool isFocused;
 public:
+    UFUNCTION(BlueprintCallable)
     void Start();
     virtual TSharedRef<SWidget> RebuildWidget() override;
+
+    virtual void BeginDestroy() override;
 
     UFUNCTION()
     void KombinatHandleClicked();
