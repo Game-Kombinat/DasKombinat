@@ -15,7 +15,7 @@
 /// to facilitate save games.
 ///
 UCLASS()
-class DASKOMBINAT_API AKombinatActor : public AActor, public ISaveable {
+class DASKOMBINAT_API AKombinatActor : public AActor {
     GENERATED_BODY()
 protected:
     /** Flag that stores ticking state when activation was toggled. Saveable */
@@ -33,8 +33,6 @@ public:
     UFUNCTION(BlueprintCallable)
     void SetActive(bool activate);
 
-    virtual void K2_AfterLoadActor_Implementation() override;
-
-    virtual void K2_BeforeSaveActor_Implementation() override;
+    
     
 };

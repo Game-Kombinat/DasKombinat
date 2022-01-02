@@ -17,10 +17,4 @@ void AKombinatActor::SetActive(bool activate) {
     SetActorHiddenInGame(!activate);
 }
 
-void AKombinatActor::K2_AfterLoadActor_Implementation() {
-    SetActive(isActive);
-}
 
-void AKombinatActor::K2_BeforeSaveActor_Implementation() {
-    
-}
