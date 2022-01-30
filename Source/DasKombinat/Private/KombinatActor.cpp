@@ -3,6 +3,10 @@
 
 #include "KombinatActor.h"
 
+AKombinatActor::AKombinatActor() {
+    isActive = true;
+}
+
 void AKombinatActor::OnConstruction(const FTransform& Transform) {
     Super::OnConstruction(Transform);
     SetActive(isActive);

@@ -27,7 +27,7 @@ protected:
     bool isActive;
     
 public:
-
+    AKombinatActor();
     virtual void OnConstruction(const FTransform& Transform) override;
     
     UFUNCTION(BlueprintCallable)
