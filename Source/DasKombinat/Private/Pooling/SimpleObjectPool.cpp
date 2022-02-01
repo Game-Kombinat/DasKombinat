@@ -16,6 +16,7 @@ void USimpleObjectPool::InitPool(int size, TSubclassOf<APoolableActor> type) {
     spawnParams.ObjectFlags = RF_Transient;
     spawnParams.bHideFromSceneOutliner = true;
     spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+    pooledObjects.Reset();
     for (int i = 0; i < size; ++i) {
         auto a = Cast<APoolableActor>(world->SpawnActor(type.Get(), &FVector::ZeroVector, &FRotator::ZeroRotator, spawnParams));
         a->OnPutBack();
