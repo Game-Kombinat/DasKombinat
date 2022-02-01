@@ -23,8 +23,10 @@ class DASKOMBINAT_API USimpleObjectPool : public UObject {
 protected:
     UPROPERTY(EditAnywhere)
     TArray<APoolableActor*> pooledObjects;
+public:
+    virtual void InitPool(int size, TSubclassOf<APoolableActor> type);
 
-    virtual void InitPool();
+    virtual void DrainPool();
     
     APoolableActor* Get();
 

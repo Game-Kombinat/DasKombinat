@@ -5,8 +5,29 @@
 
 #include "Logging.h"
 
-void USimpleObjectPool::InitPool() {
-    
+void USimpleObjectPool::InitPool(int size, TSubclassOf<APoolableActor> type) {
+    const auto world = GetWorld();
+    if (!world) {
+        LOG_ERROR("No world to spawn the actors of type %s in!", *type.Get()->GetName());
+        return;
+    }
+
+    FActorSpawnParameters spawnParams;
+    spawnParams.ObjectFlags = RF_Transient;
+    spawnParams.bHideFromSceneOutliner = true;
+    spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+    for (int i = 0; i < size; ++i) {
+        auto a = Cast<APoolableActor>(world->SpawnActor(type.Get(), &FVector::ZeroVector, &FRotator::ZeroRotator, spawnParams));
+        a->OnPutBack();
+        pooledObjects.AddUnique(a);
+    }
+}
+
+void USimpleObjectPool::DrainPool() {
+    for (int i = 0; i < pooledObjects.Num(); ++i) {
+        pooledObjects[i]->Destroy();
+    }
+    pooledObjects.Reset();
 }
 
 APoolableActor* USimpleObjectPool::Get() {
