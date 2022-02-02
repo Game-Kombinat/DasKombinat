@@ -21,10 +21,18 @@ class DASKOMBINAT_API USimpleObjectPool : public UObject {
     GENERATED_BODY()
 
 protected:
-    UPROPERTY(EditAnywhere)
+    UPROPERTY()
     TArray<APoolableActor*> pooledObjects;
+
+    TSubclassOf<APoolableActor> pooledType;
+
+    UPROPERTY()
+    int capacity;
+
+    UPROPERTY()
+    bool progressive;
 public:
-    virtual void InitPool(int size, TSubclassOf<APoolableActor> type);
+    virtual void InitPool(int size, bool isProgressive, TSubclassOf<APoolableActor> type);
 
     virtual void DrainPool();
     
@@ -35,4 +43,6 @@ public:
     // just some convenience for readability, might not get used
     // because the pooled objects already can put themselves back on their own.
     static void PutBack(APoolableActor* actor);
+private:
+    APoolableActor* CreateObject(UWorld* world);
 };

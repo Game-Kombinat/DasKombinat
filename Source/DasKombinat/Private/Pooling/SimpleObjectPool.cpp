@@ -5,22 +5,23 @@
 
 #include "Logging.h"
 
-void USimpleObjectPool::InitPool(int size, TSubclassOf<APoolableActor> type) {
+void USimpleObjectPool::InitPool(int size, bool isProgressive, TSubclassOf<APoolableActor> type) {
     const auto world = GetWorld();
     if (!world) {
         LOG_ERROR("No world to spawn the actors of type %s in!", *type.Get()->GetName());
         return;
     }
+    capacity = size;
+    progressive = isProgressive;
+    pooledType = type;
 
-    FActorSpawnParameters spawnParams;
-    spawnParams.ObjectFlags = RF_Transient;
-    spawnParams.bHideFromSceneOutliner = true;
-    spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
     pooledObjects.Reset();
-    for (int i = 0; i < size; ++i) {
-        auto a = Cast<APoolableActor>(world->SpawnActor(type.Get(), &FVector::ZeroVector, &FRotator::ZeroRotator, spawnParams));
-        a->OnPutBack();
-        pooledObjects.AddUnique(a);
+
+    if (progressive) {
+        return;
+    }
+    for (int i = 0; i < capacity; ++i) {
+        CreateObject(world);
     }
 }
 
@@ -43,6 +44,12 @@ APoolableActor* USimpleObjectPool::Get() {
             return object;
         }
     }
+    if (progressive && pooledObjects.Num() < capacity) {
+        const auto a = CreateObject(GetWorld());
+        a->OnDispense();
+        return a;
+    }
+    
     LOG_WARNING("No free objects in pool!");
     return nullptr;
 }
@@ -67,4 +74,18 @@ bool USimpleObjectPool::Get(APoolableActor** geddit) {
 
 void USimpleObjectPool::PutBack(APoolableActor* actor) {
     actor->OnPutBack();
+}
+
+APoolableActor* USimpleObjectPool::CreateObject(UWorld* world) {
+    FActorSpawnParameters spawnParams;
+    spawnParams.ObjectFlags = RF_Transient;
+    spawnParams.bHideFromSceneOutliner = true;
+    spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+    
+    const auto a = Cast<APoolableActor>(world->SpawnActor(pooledType.Get(), &FVector::ZeroVector, &FRotator::ZeroRotator, spawnParams));
+    a->OnPutBack();
+    pooledObjects.AddUnique(a);
+
+    return a;
+    
 }
