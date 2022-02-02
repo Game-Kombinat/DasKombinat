@@ -5,8 +5,8 @@
 
 #include "Logging.h"
 
-void USimpleObjectPool::InitPool(int size, bool isProgressive, TSubclassOf<APoolableActor> type) {
-    const auto world = GetWorld();
+void USimpleObjectPool::InitPool(int size, bool isProgressive, TSubclassOf<APoolableActor> type, UWorld* inWorld) {
+    world = inWorld;
     if (!world) {
         LOG_ERROR("No world to spawn the actors of type %s in!", *type.Get()->GetName());
         return;
@@ -15,13 +15,13 @@ void USimpleObjectPool::InitPool(int size, bool isProgressive, TSubclassOf<APool
     progressive = isProgressive;
     pooledType = type;
 
-    pooledObjects.Reset();
+    pooledObjects.Reset(capacity);
 
     if (progressive) {
         return;
     }
     for (int i = 0; i < capacity; ++i) {
-        CreateObject(world);
+        CreateObject();
     }
 }
 
@@ -45,7 +45,7 @@ APoolableActor* USimpleObjectPool::Get() {
         }
     }
     if (progressive && pooledObjects.Num() < capacity) {
-        const auto a = CreateObject(GetWorld());
+        const auto a = CreateObject();
         a->OnDispense();
         return a;
     }
@@ -67,6 +67,12 @@ bool USimpleObjectPool::Get(APoolableActor** geddit) {
             return true;
         }
     }
+    if (progressive && pooledObjects.Num() < capacity) {
+        const auto a = CreateObject();
+        a->OnDispense();
+        *geddit = a;
+        return true;
+    }
     *geddit = nullptr;
     LOG_WARNING("No free objects in pool!");
     return false;
@@ -76,10 +82,10 @@ void USimpleObjectPool::PutBack(APoolableActor* actor) {
     actor->OnPutBack();
 }
 
-APoolableActor* USimpleObjectPool::CreateObject(UWorld* world) {
+APoolableActor* USimpleObjectPool::CreateObject() {
     FActorSpawnParameters spawnParams;
     spawnParams.ObjectFlags = RF_Transient;
-    spawnParams.bHideFromSceneOutliner = true;
+    //spawnParams.bHideFromSceneOutliner = true;
     spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
     
     const auto a = Cast<APoolableActor>(world->SpawnActor(pooledType.Get(), &FVector::ZeroVector, &FRotator::ZeroRotator, spawnParams));

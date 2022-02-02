@@ -31,8 +31,11 @@ protected:
 
     UPROPERTY()
     bool progressive;
+
+    UPROPERTY()
+    UWorld* world;
 public:
-    virtual void InitPool(int size, bool isProgressive, TSubclassOf<APoolableActor> type);
+    virtual void InitPool(int size, bool isProgressive, TSubclassOf<APoolableActor> type, UWorld* inWorld);
 
     virtual void DrainPool();
     
@@ -44,5 +47,5 @@ public:
     // because the pooled objects already can put themselves back on their own.
     static void PutBack(APoolableActor* actor);
 private:
-    APoolableActor* CreateObject(UWorld* world);
+    APoolableActor* CreateObject();
 };
