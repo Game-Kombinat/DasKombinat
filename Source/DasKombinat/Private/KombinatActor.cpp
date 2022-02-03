@@ -13,9 +13,11 @@ void AKombinatActor::OnConstruction(const FTransform& Transform) {
 }
 
 void AKombinatActor::SetActive(bool activate) {
-    wasTickingWhenDeactivated = IsActorTickEnabled();
-    isActive = activate;
+    if (!activate) {
+        wasTickingWhenDeactivated = IsActorTickEnabled();
+    }
     
+    isActive = activate;
     SetActorTickEnabled(activate);
     SetActorEnableCollision(activate);
     SetActorHiddenInGame(!activate);
