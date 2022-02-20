@@ -26,11 +26,7 @@ UCoroutineManager::~UCoroutineManager() {
 }
 
 void UCoroutineManager::Prepare() {
-    // todo: this returns "valid" in second playthrough but Reset throws access exception.
-    // might be a leak.
-    // if (instance.IsValid()) {
-    //     instance.Reset();
-    // }
+    instance = nullptr;
     instance = this;
 }
 
@@ -40,7 +36,8 @@ FCoroutineControl UCoroutineManager::Add(TSharedPtr<FCoroutine> coroutine) {
     }
 
     scheduledAdds.Add(coroutine);
-
+    // ReSharper disable once CppExpressionWithoutSideEffects
+    onCoroutineAdded.ExecuteIfBound();
     return FCoroutineControl(coroutine);
 }
 
@@ -66,7 +63,12 @@ void UCoroutineManager::Tick() {
         r->Cleanup();
         r.Reset();
     }
-    scheduledRemovals.Empty();
+    if (scheduledRemovals.Num() > 0) {
+        scheduledRemovals.Reset();
+        // ReSharper disable once CppExpressionWithoutSideEffects
+        onCoroutineRemoved.ExecuteIfBound();
+    }
+    
 }
 
 bool UCoroutineManager::NeedsTicking() const {

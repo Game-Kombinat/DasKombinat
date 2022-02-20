@@ -78,12 +78,12 @@ FCoroutineControl FInterpolator::Anim8(UWorld* world, float duration, bool playF
     return UCoroutineManager::Instance()->Add(shared);
 }
 
-FCoroutineControl FInterpolator::Anim8(UWorld* world, float duration, bool playForward, TFunctionRef<void (float)> onSample, TFunctionRef<void()> onFinish) {
+FCoroutineControl FInterpolator::Anim8(UWorld* world, float duration, bool playForward, UObject* objRef, void (UObject::*onSample)(float), void (UObject::*onFinish)()) {
     FAnim8Sample sample;
-    sample.BindLambda(onSample);
+    sample.BindUObject(objRef, onSample);
 
     FAnim8Done done;
-    done.BindLambda(onFinish);
+    done.BindUObject(objRef, onFinish);
     const auto shared = MakeShareable(new FAnim8Action(playForward, FInterpolator(duration, world), sample, done));
     return UCoroutineManager::Instance()->Add(shared);
 }

@@ -8,6 +8,7 @@
 
 #include "CoroutineManager.generated.h"
 
+DECLARE_DYNAMIC_DELEGATE(FCoroutineAction);
 /**
  * Manages simple coroutine like stuff.
  * Bit like the latent action manager but without the blueprint shebang attached.
@@ -22,6 +23,12 @@ class DASKOMBINAT_API UCoroutineManager : public UObject {
     TArray<TSharedPtr<FCoroutine>> scheduledAdds;
     TArray<TSharedPtr<FCoroutine>> scheduledRemovals;
 public:
+    UPROPERTY()
+    FCoroutineAction onCoroutineAdded;
+
+    UPROPERTY()
+    FCoroutineAction onCoroutineRemoved;
+    
     virtual ~UCoroutineManager() override;
     void Prepare();
 
