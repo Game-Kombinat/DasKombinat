@@ -5,12 +5,10 @@
 
 #include "Logging.h"
 
-void USimpleObjectPool::InitPool(int size, bool isProgressive, TSubclassOf<APoolableActor> type, UWorld* inWorld) {
-    world = inWorld;
-    if (!world) {
-        LOG_ERROR("No world to spawn the actors of type %s in!", *type.Get()->GetName());
-        return;
-    }
+void USimpleObjectPool::InitPool(int size, bool isProgressive, TSubclassOf<APoolableActor> type, AActor* inPoolOwner) {
+    world = inPoolOwner->GetWorld();
+    poolOwner = inPoolOwner;
+    
     capacity = size;
     progressive = isProgressive;
     pooledType = type;
@@ -87,7 +85,7 @@ APoolableActor* USimpleObjectPool::CreateObject() {
     spawnParams.ObjectFlags = RF_Transient;
     spawnParams.bHideFromSceneOutliner = true;
     spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-    
+    spawnParams.Owner = poolOwner;
     const auto a = Cast<APoolableActor>(world->SpawnActor(pooledType.Get(), &FVector::ZeroVector, &FRotator::ZeroRotator, spawnParams));
     a->OnPutBack();
     pooledObjects.AddUnique(a);
