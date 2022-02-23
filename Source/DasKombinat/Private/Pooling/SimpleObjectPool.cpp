@@ -83,7 +83,9 @@ void USimpleObjectPool::PutBack(APoolableActor* actor) {
 APoolableActor* USimpleObjectPool::CreateObject() {
     FActorSpawnParameters spawnParams;
     spawnParams.ObjectFlags = RF_Transient;
+#if WITH_EDITOR
     spawnParams.bHideFromSceneOutliner = true;
+#endif
     spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
     spawnParams.Owner = poolOwner;
     const auto a = Cast<APoolableActor>(world->SpawnActor(pooledType.Get(), &FVector::ZeroVector, &FRotator::ZeroRotator, spawnParams));
