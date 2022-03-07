@@ -23,6 +23,11 @@ void USimpleObjectPool::InitPool(int size, bool isProgressive, TSubclassOf<APool
     }
 }
 
+void USimpleObjectPool::InitPool(int size, bool isProgressive, TSubclassOf<APoolableActor> type, AActor* inPoolOwner, APawn* instigator) {
+    poolObjectInstigator = instigator;
+    InitPool(size, isProgressive, type, inPoolOwner);
+}
+
 void USimpleObjectPool::DrainPool() {
     for (int i = 0; i < pooledObjects.Num(); ++i) {
         pooledObjects[i]->Destroy();
@@ -88,6 +93,7 @@ APoolableActor* USimpleObjectPool::CreateObject() {
 #endif
     spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
     spawnParams.Owner = poolOwner;
+    spawnParams.Instigator = poolObjectInstigator;
     const auto a = Cast<APoolableActor>(world->SpawnActor(pooledType.Get(), &FVector::ZeroVector, &FRotator::ZeroRotator, spawnParams));
     a->OnPutBack();
     pooledObjects.AddUnique(a);
