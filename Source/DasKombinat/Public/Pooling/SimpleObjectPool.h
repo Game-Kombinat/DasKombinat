@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Logging.h"
 #include "PoolableActor.h"
 #include "SimpleObjectPool.generated.h"
 
@@ -45,6 +46,8 @@ public:
     APoolableActor* Get();
 
     bool Get(APoolableActor** geddit);
+    template<typename  T>
+    bool Get(T** geddit);
 
     // just some convenience for readability, might not get used
     // because the pooled objects already can put themselves back on their own.
@@ -52,3 +55,40 @@ public:
 private:
     APoolableActor* CreateObject();
 };
+
+// it's a generic type hence it has to be in the header for compiling purposes.
+template <typename T>
+bool USimpleObjectPool::Get(T** geddit) {
+    *geddit = nullptr;
+    for (int i = 0; i < pooledObjects.Num(); ++i) {
+        const auto object = pooledObjects[i];
+        if (!object) {
+            LOG_WARNING("Object in pool is null!");
+            continue;
+        }
+        if (object->CanBeTaken()) {
+            object->OnDispense();
+            T* tmp = Cast<T>(object);
+            if (!tmp) {
+                LOG_ERROR("get template provided type is not a poolable actor type! That's all we know.");
+                return false;
+            }
+            *geddit = tmp;
+            return true;
+        }
+    }
+    if (progressive && pooledObjects.Num() < capacity) {
+        const auto a = CreateObject();
+        a->OnDispense();
+        T* tmp = Cast<T>(a);
+        if (!tmp) {
+            LOG_ERROR("get template provided type is not a poolable actor type! That's all we know.");
+            return false;
+        }
+        *geddit = tmp;
+        return true;
+    }
+    LOG_WARNING("No free objects in pool!");
+    return false;
+}
+
