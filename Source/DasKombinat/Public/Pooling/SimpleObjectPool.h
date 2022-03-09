@@ -22,31 +22,37 @@ class DASKOMBINAT_API USimpleObjectPool : public UObject {
     GENERATED_BODY()
 
 protected:
-    UPROPERTY()
+    UPROPERTY(Replicated)
     AActor* poolOwner;
 
-    UPROPERTY()
+    UPROPERTY(Replicated)
     APawn* poolObjectInstigator;
     
-    UPROPERTY()
+    UPROPERTY(Replicated)
     TArray<APoolableActor*> pooledObjects;
 
     TSubclassOf<APoolableActor> pooledType;
 
-    UPROPERTY()
+    UPROPERTY(Replicated)
     int capacity;
 
-    UPROPERTY()
+    UPROPERTY(Replicated)
     bool progressive;
 
     UPROPERTY()
     UWorld* world;
 public:
+    USimpleObjectPool();
     virtual void InitPool(int size, bool isProgressive, TSubclassOf<APoolableActor> type, AActor* inPoolOwner);
     
     virtual void InitPool(int size, bool isProgressive, TSubclassOf<APoolableActor> type, AActor* inPoolOwner, APawn* instigator);
 
     virtual void DrainPool();
+
+    TArray<APoolableActor*> GetPool();
+
+    virtual bool IsSupportedForNetworking() const override;
+    virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
     
     APoolableActor* Get();
 

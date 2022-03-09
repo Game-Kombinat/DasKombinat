@@ -4,6 +4,11 @@
 #include "Pooling/SimpleObjectPool.h"
 
 #include "Logging.h"
+#include "Net/UnrealNetwork.h"
+
+USimpleObjectPool::USimpleObjectPool() {
+    
+}
 
 void USimpleObjectPool::InitPool(int size, bool isProgressive, TSubclassOf<APoolableActor> type, AActor* inPoolOwner) {
     world = inPoolOwner->GetWorld();
@@ -33,6 +38,23 @@ void USimpleObjectPool::DrainPool() {
         pooledObjects[i]->Destroy();
     }
     pooledObjects.Reset();
+}
+
+TArray<APoolableActor*> USimpleObjectPool::GetPool() {
+    return pooledObjects;
+}
+
+bool USimpleObjectPool::IsSupportedForNetworking() const {
+    return true;
+}
+
+void USimpleObjectPool::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+    UObject::GetLifetimeReplicatedProps(OutLifetimeProps);
+    DOREPLIFETIME(USimpleObjectPool, poolOwner);
+    DOREPLIFETIME(USimpleObjectPool, poolObjectInstigator);
+    DOREPLIFETIME(USimpleObjectPool, pooledObjects);
+    DOREPLIFETIME(USimpleObjectPool, capacity);
+    DOREPLIFETIME(USimpleObjectPool, progressive);
 }
 
 APoolableActor* USimpleObjectPool::Get() {
