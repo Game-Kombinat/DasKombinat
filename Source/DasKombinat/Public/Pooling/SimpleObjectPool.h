@@ -58,7 +58,7 @@ public:
 
     bool Get(APoolableActor** geddit);
     template<typename  T>
-    bool Get(T** geddit);
+    bool Get(T** geddit, bool canSpawnNewObject = true);
 
     // just some convenience for readability, might not get used
     // because the pooled objects already can put themselves back on their own.
@@ -69,7 +69,7 @@ private:
 
 // it's a generic type hence it has to be in the header for compiling purposes.
 template <typename T>
-bool USimpleObjectPool::Get(T** geddit) {
+bool USimpleObjectPool::Get(T** geddit, bool canSpawnNewObject) {
     *geddit = nullptr;
     for (int i = 0; i < pooledObjects.Num(); ++i) {
         const auto object = pooledObjects[i];
@@ -88,7 +88,7 @@ bool USimpleObjectPool::Get(T** geddit) {
             return true;
         }
     }
-    if (progressive && pooledObjects.Num() < capacity) {
+    if (progressive && pooledObjects.Num() < capacity && canSpawnNewObject) {
         const auto a = CreateObject();
         a->OnDispense();
         T* tmp = Cast<T>(a);

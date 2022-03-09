@@ -116,6 +116,8 @@ APoolableActor* USimpleObjectPool::CreateObject() {
     spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
     spawnParams.Owner = poolOwner;
     spawnParams.Instigator = poolObjectInstigator;
+    spawnParams.Name = FName(FString::Format(TEXT("{0}:{1}_{2}"), { poolOwner->GetName(), pooledType.Get()->GetName(), pooledObjects.Num()}));
+    spawnParams.NameMode = FActorSpawnParameters::ESpawnActorNameMode::Requested;
     const auto a = Cast<APoolableActor>(world->SpawnActor(pooledType.Get(), &FVector::ZeroVector, &FRotator::ZeroRotator, spawnParams));
     a->OnPutBack();
     pooledObjects.AddUnique(a);

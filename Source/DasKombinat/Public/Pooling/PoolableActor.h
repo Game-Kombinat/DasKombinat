@@ -11,7 +11,7 @@ UCLASS(Abstract)
 class DASKOMBINAT_API APoolableActor : public AKombinatActor {
     GENERATED_BODY()
 protected:
-    UPROPERTY(Transient)
+    UPROPERTY(Transient, Replicated)
     bool isReady;
 public:
     // Sets default values for this actor's properties
@@ -33,4 +33,6 @@ public:
      * If false, object is already taken.
      */
     bool CanBeTaken() const;
+
+    virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 };

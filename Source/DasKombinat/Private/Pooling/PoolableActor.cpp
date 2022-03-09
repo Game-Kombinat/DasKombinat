@@ -3,6 +3,8 @@
 
 #include "Pooling/PoolableActor.h"
 
+#include "Net/UnrealNetwork.h"
+
 
 // Sets default values
 APoolableActor::APoolableActor() {
@@ -26,4 +28,9 @@ void APoolableActor::OnPutBack() {
 
 bool APoolableActor::CanBeTaken() const {
     return isReady;
+}
+
+void APoolableActor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+    DOREPLIFETIME(APoolableActor, isReady);
 }
