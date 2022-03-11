@@ -12,20 +12,15 @@ void UJuiceProfile::InitHandlers(UWorld* inWorld) {
     // needs the world set again in order to function properly.
     
     world = inWorld;
-    TArray<FHandlerPlayData> newHandlers;
+    runtimeHandlers.Reset(handlers.Num());
     for (int i = 0; i < handlers.Num(); ++i) {
-        auto newHandler = NewObject<UJuiceHandler>(GetTransientPackage(), handlers[i].handler->GetClass(), NAME_None, RF_Transient, handlers[i].handler);
+        const auto newHandler = NewObject<UJuiceHandler>(this, handlers[i].handler->GetClass(), NAME_None, RF_Transient, handlers[i].handler);
         FHandlerPlayData newData;
         newData.delay = handlers[i].delay;
         newData.timerHandle = FTimerHandle();
         newData.handler = newHandler;
-        newHandlers.Add(newData);
+        runtimeHandlers.Add(newData);
     }
-    for (int i = 0; i < runtimeHandlers.Num(); ++i) {
-        runtimeHandlers[i].handler->DecommissionHandler();
-    }
-    runtimeHandlers = newHandlers;
-
     for (int i = 0; i < runtimeHandlers.Num(); ++i) {
         runtimeHandlers[i].handler->InitHandler(inWorld);
     }
@@ -36,8 +31,8 @@ UJuiceProfile* UJuiceProfile::RegisterFor(UObject* owner) {
 }
 
 void UJuiceProfile::DecommissionHandlers() {
-    for (int i = 0; i < handlers.Num(); ++i) {
-        handlers[i].handler->DecommissionHandler();
+    for (int i = 0; i < runtimeHandlers.Num(); ++i) {
+        runtimeHandlers[i].handler->DecommissionHandler();
     }
 }
 
@@ -49,14 +44,13 @@ void UJuiceProfile::Play(FJuiceInfo& fji, UObject* owner) const {
     //     LOG_ERROR("Juice profile %s was not registered for owner %s", *GetName(), *owner->GetName());
     //     return;
     // }
-    LOG_INFO("juice profile play owner world is %s", *owner->GetWorld()->GetFullName());
-    for (int i = 0; i < handlers.Num(); ++i) {
-        const auto handlerData = handlers[i];
+    for (int i = 0; i < runtimeHandlers.Num(); ++i) {
+        const auto handlerData = runtimeHandlers[i];
         const auto handler = handlerData.handler;
         handler->BeforePlay();
         if (handlerData.delay > 0) {
             FJuiceInfo delayedFjo = fji; // make a copy so that
-            auto timerHandle = handlers[i].timerHandle;
+            auto timerHandle = handlerData.timerHandle;
             owner->GetWorld()->GetTimerManager().SetTimer(timerHandle, [&]() { handler->Play(delayedFjo); }, handlerData.delay, false);
         }
         else {

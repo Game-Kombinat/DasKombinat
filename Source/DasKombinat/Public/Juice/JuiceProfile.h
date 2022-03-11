@@ -53,7 +53,7 @@ protected:
     UPROPERTY(EditAnywhere)
     TArray<FHandlerPlayData> handlers;
 
-    UPROPERTY()
+    UPROPERTY(Transient)
     TArray<FHandlerPlayData> runtimeHandlers;
 
     UPROPERTY(Transient)

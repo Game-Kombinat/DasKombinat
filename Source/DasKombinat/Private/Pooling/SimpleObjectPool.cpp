@@ -12,7 +12,6 @@ USimpleObjectPool::USimpleObjectPool() {
 
 void USimpleObjectPool::InitPool(int size, bool isProgressive, TSubclassOf<APoolableActor> type, UObject* inPoolOwner) {
     world = inPoolOwner->IsA(UWorld::StaticClass()) ? Cast<UWorld>(inPoolOwner) : inPoolOwner->GetWorld();
-    LOG_INFO("Determined world in object pool is %s", *world->GetFullName())
     poolOwner = inPoolOwner;
     
     capacity = size;

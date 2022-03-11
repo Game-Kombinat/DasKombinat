@@ -16,7 +16,7 @@ class DASKOMBINAT_API UJuiceHandler : public UDataAsset {
 protected:
     UPROPERTY(Transient)
     bool isPrimed = false;
-    UPROPERTY()
+    UPROPERTY(Transient)
     UWorld* world;
     
 public:

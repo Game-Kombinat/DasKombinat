@@ -23,22 +23,25 @@ void UJuiceSubsystem::Deinitialize() {
 
 UJuiceProfile* UJuiceSubsystem::RegisterProfile(UJuiceProfile* profile, UObject* owner) {
     const auto runtimeProfile = NewObject<UJuiceProfile>(GetTransientPackage(), UJuiceProfile::StaticClass(), NAME_None, RF_Transient, profile, false);
-    if (!registeredProfiles.Contains(owner)) {
-        registeredProfiles.Add(owner, FProfileOwnerRegister());
-    }
-    const auto klass = profile->GetClass();
-    auto reg = registeredProfiles[owner];
-    if (!reg.registeredProfileTypes.Contains(klass)) {
-        runtimeProfile->InitHandlers(owner->GetWorld());
-        runtimeProfile->MarkAsInstance();
-        reg.registeredProfileTypes.Add(klass);
-        reg.runtimeProfiles.Add(runtimeProfile);
-        registeredProfiles[owner] = reg;
-        return runtimeProfile;
-    }
-    
-
-    return GetRuntimeProfile(profile, owner);
+    runtimeProfile->InitHandlers(owner->GetWorld());
+    runtimeProfile->MarkAsInstance();
+    return runtimeProfile;
+    // if (!registeredProfiles.Contains(owner)) {
+    //     registeredProfiles.Add(owner, FProfileOwnerRegister());
+    // }
+    // const auto klass = profile->GetClass();
+    // auto reg = registeredProfiles[owner];
+    // if (!reg.registeredProfileTypes.Contains(klass)) {
+    //     runtimeProfile->InitHandlers(owner->GetWorld());
+    //     runtimeProfile->MarkAsInstance();
+    //     reg.registeredProfileTypes.Add(klass);
+    //     reg.runtimeProfiles.Add(runtimeProfile);
+    //     registeredProfiles[owner] = reg;
+    //     return runtimeProfile;
+    // }
+    //
+    //
+    // return GetRuntimeProfile(profile, owner);
 }
 
 UJuiceProfile* UJuiceSubsystem::GetRuntimeProfile(const UJuiceProfile* profile, UObject* owner) {
