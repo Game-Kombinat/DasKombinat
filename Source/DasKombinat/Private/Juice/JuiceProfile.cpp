@@ -12,7 +12,6 @@ void UJuiceProfile::InitHandlers(UWorld* inWorld) {
     // needs the world set again in order to function properly.
     
     world = inWorld;
-    LOG_INFO("INit Handlers with world %s", *inWorld->GetFullName())
     TArray<FHandlerPlayData> newHandlers;
     for (int i = 0; i < handlers.Num(); ++i) {
         auto newHandler = NewObject<UJuiceHandler>(GetTransientPackage(), handlers[i].handler->GetClass(), NAME_None, RF_Transient, handlers[i].handler);
@@ -33,7 +32,6 @@ void UJuiceProfile::InitHandlers(UWorld* inWorld) {
 }
 
 UJuiceProfile* UJuiceProfile::RegisterFor(UObject* owner) {
-    LOG_INFO("Registering profile for %s in world %s", *owner->GetName(), *owner->GetWorld()->GetFullName());
     return owner->GetWorld()->GetSubsystem<UJuiceSubsystem>()->RegisterProfile(this, owner);
 }
 
