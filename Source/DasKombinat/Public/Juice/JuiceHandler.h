@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/Object.h"
+#include "JuiceProfile.h"
 #include "JuiceHandler.generated.h"
 
 struct FJuiceInfo;
@@ -21,7 +21,7 @@ protected:
     
 public:
 
-    virtual void Play(FJuiceInfo& fji) PURE_VIRTUAL(return);
+    virtual void Play(FJuiceInfo fji) PURE_VIRTUAL(return);
     
     virtual void BeforePlay() PURE_VIRTUAL(return);
 

@@ -37,9 +37,8 @@ void URuntimeJuiceProfile::Play(FJuiceInfo& fji) {
         const auto handler = handlerData.handler;
         handler->BeforePlay();
         if (handlerData.delay > 0) {
-            FJuiceInfo delayedFjo = fji; // make a copy so that
             auto timerHandle = handlerData.timerHandle;
-            world->GetTimerManager().SetTimer(timerHandle, [&]() { handler->Play(delayedFjo); }, handlerData.delay, false);
+            world->GetTimerManager().SetTimer(timerHandle, [handler, fji]() { handler->Play(fji); }, handlerData.delay, false);
         }
         else {
             handler->Play(fji);
