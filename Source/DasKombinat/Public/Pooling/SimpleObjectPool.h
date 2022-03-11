@@ -23,7 +23,7 @@ class DASKOMBINAT_API USimpleObjectPool : public UObject {
 
 protected:
     UPROPERTY(Replicated)
-    AActor* poolOwner;
+    UObject* poolOwner;
 
     UPROPERTY(Replicated)
     APawn* poolObjectInstigator;
@@ -43,9 +43,9 @@ protected:
     UWorld* world;
 public:
     USimpleObjectPool();
-    virtual void InitPool(int size, bool isProgressive, TSubclassOf<APoolableActor> type, AActor* inPoolOwner);
+    virtual void InitPool(int size, bool isProgressive, TSubclassOf<APoolableActor> type, UObject* inPoolOwner);
     
-    virtual void InitPool(int size, bool isProgressive, TSubclassOf<APoolableActor> type, AActor* inPoolOwner, APawn* instigator);
+    virtual void InitPool(int size, bool isProgressive, TSubclassOf<APoolableActor> type, UObject* inPoolOwner, APawn* instigator);
 
     virtual void DrainPool();
 

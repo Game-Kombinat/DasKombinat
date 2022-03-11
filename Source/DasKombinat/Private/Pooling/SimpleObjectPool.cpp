@@ -10,7 +10,7 @@ USimpleObjectPool::USimpleObjectPool() {
     
 }
 
-void USimpleObjectPool::InitPool(int size, bool isProgressive, TSubclassOf<APoolableActor> type, AActor* inPoolOwner) {
+void USimpleObjectPool::InitPool(int size, bool isProgressive, TSubclassOf<APoolableActor> type, UObject* inPoolOwner) {
     world = inPoolOwner->GetWorld();
     poolOwner = inPoolOwner;
     
@@ -28,7 +28,7 @@ void USimpleObjectPool::InitPool(int size, bool isProgressive, TSubclassOf<APool
     }
 }
 
-void USimpleObjectPool::InitPool(int size, bool isProgressive, TSubclassOf<APoolableActor> type, AActor* inPoolOwner, APawn* instigator) {
+void USimpleObjectPool::InitPool(int size, bool isProgressive, TSubclassOf<APoolableActor> type, UObject* inPoolOwner, APawn* instigator) {
     poolObjectInstigator = instigator;
     InitPool(size, isProgressive, type, inPoolOwner);
 }
@@ -114,7 +114,7 @@ APoolableActor* USimpleObjectPool::CreateObject() {
     spawnParams.bHideFromSceneOutliner = true;
 #endif
     spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-    spawnParams.Owner = poolOwner;
+    spawnParams.Owner = Cast<AActor>(poolOwner); // this could be null if the pool owner wasn't an actor but it's okay
     spawnParams.Instigator = poolObjectInstigator;
     spawnParams.Name = FName(FString::Format(TEXT("{0}:{1}_{2}"), { poolOwner->GetName(), pooledType.Get()->GetName(), pooledObjects.Num()}));
     spawnParams.NameMode = FActorSpawnParameters::ESpawnActorNameMode::Requested;
