@@ -11,7 +11,8 @@ USimpleObjectPool::USimpleObjectPool() {
 }
 
 void USimpleObjectPool::InitPool(int size, bool isProgressive, TSubclassOf<APoolableActor> type, UObject* inPoolOwner) {
-    world = inPoolOwner->GetWorld();
+    world = inPoolOwner->IsA(UWorld::StaticClass()) ? Cast<UWorld>(inPoolOwner) : inPoolOwner->GetWorld();
+    LOG_INFO("Determined world in object pool is %s", *world->GetFullName())
     poolOwner = inPoolOwner;
     
     capacity = size;
@@ -110,9 +111,9 @@ void USimpleObjectPool::PutBack(APoolableActor* actor) {
 APoolableActor* USimpleObjectPool::CreateObject() {
     FActorSpawnParameters spawnParams;
     spawnParams.ObjectFlags = RF_Transient;
-#if WITH_EDITOR
-    spawnParams.bHideFromSceneOutliner = true;
-#endif
+// #if WITH_EDITOR
+//     spawnParams.bHideFromSceneOutliner = true;
+// #endif
     spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
     spawnParams.Owner = Cast<AActor>(poolOwner); // this could be null if the pool owner wasn't an actor but it's okay
     spawnParams.Instigator = poolObjectInstigator;

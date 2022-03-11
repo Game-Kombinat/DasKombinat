@@ -14,6 +14,7 @@ UCLASS()
 class DASKOMBINAT_API UJuiceHandler : public UDataAsset {
     GENERATED_BODY()
 protected:
+    UPROPERTY(Transient)
     bool isPrimed = false;
     UPROPERTY()
     UWorld* world;
@@ -24,9 +25,9 @@ public:
     
     virtual void BeforePlay() PURE_VIRTUAL(return);
 
-    virtual void DecommissionHandler();
+    void DecommissionHandler();
 
-    virtual void InitHandler(UWorld* inWorld);
+    void InitHandler(UWorld* inWorld);
     
 protected:
     virtual void InternalDecommissionHandler() PURE_VIRTUAL(return);
