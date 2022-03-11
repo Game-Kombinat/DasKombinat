@@ -3,23 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/Object.h"
+#include "HandlerPlayData.h"
 #include "JuiceProfile.generated.h"
 
-USTRUCT()
-struct DASKOMBINAT_API FHandlerPlayData {
-    GENERATED_BODY()
 
-    UPROPERTY(EditAnywhere)
-    class UJuiceHandler* handler = nullptr;
-
-    UPROPERTY(EditAnywhere)
-    float delay = 0;
-
-    UPROPERTY()
-    FTimerHandle timerHandle;
-};
-
+class URuntimeJuiceProfile;
 USTRUCT(BlueprintType)
 struct DASKOMBINAT_API FJuiceInfo {
     GENERATED_BODY()
@@ -52,29 +40,23 @@ class DASKOMBINAT_API UJuiceProfile : public UDataAsset {
 protected:
     UPROPERTY(EditAnywhere)
     TArray<FHandlerPlayData> handlers;
-
-    UPROPERTY(Transient)
-    TArray<FHandlerPlayData> runtimeHandlers;
-
-    UPROPERTY(Transient)
-    UWorld* world;
-
-    UPROPERTY(Transient)
-    class UJuiceSubsystem* juiceSubsystem;
-
-    UPROPERTY(Transient)
-    bool isInstance;
-
 public:
-    void InitHandlers(UWorld* inWorld);
+    TArray<FHandlerPlayData>& GetHandlers() { return handlers; }
 
-    bool IsInstance() const { return isInstance; }
+    
+    ///
+    /// Convenience method to play this profile.
+    /// If you are rapidly calling play, it's better to get the runtime
+    /// profile and cache it on your call site to save you a whole bunch of lookups.
+    ///
+    void Play(FJuiceInfo& fji, UObject* owner);
 
-    UJuiceProfile* RegisterFor(UObject* owner);
-
-    void DecommissionHandlers();
-
-    void Play(FJuiceInfo& fji, UObject* owner) const;
-    void MarkAsInstance();
-
+    
+    ///
+    /// Gets a runtime profile for this juice profile asset
+    /// that is bound to the given owner and its world.
+    /// If you need to call this juice profile a lot, it's better to
+    /// get this runtime profile.
+    ///
+    URuntimeJuiceProfile* GetRuntimeProfile(UObject* owner);
 };

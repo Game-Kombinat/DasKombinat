@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "JuiceProfile.h"
+#include "RuntimeJuiceProfile.h"
 #include "UObject/Object.h"
 #include "JuiceSubsystem.generated.h"
 
@@ -11,17 +12,11 @@ USTRUCT()
 struct FProfileOwnerRegister {
     GENERATED_BODY()
     UPROPERTY()
-    UObject* owner = nullptr;
+    TArray<class URuntimeJuiceProfile*> runtimeProfiles;
 
-    UPROPERTY()
-    TArray<class UJuiceProfile*> runtimeProfiles;
-
-    UPROPERTY()
-    TArray<class UClass*> registeredProfileTypes;
-
-    UJuiceProfile* GetRuntimeProfileFor(UClass* klass) {
+    URuntimeJuiceProfile* GetRuntimeProfileFor(UJuiceProfile* oProfile) {
         for (int i = 0; i < runtimeProfiles.Num(); ++i) {
-            if (runtimeProfiles[i]->GetClass() == klass) {
+            if (runtimeProfiles[i]->originalProfile == oProfile) {
                 return runtimeProfiles[i];
             }
         }
@@ -44,7 +39,10 @@ protected:
 public:
     virtual void Initialize(FSubsystemCollectionBase& Collection) override;
     virtual void Deinitialize() override;
+    URuntimeJuiceProfile* GetRuntimeProfile(UJuiceProfile* juiceProfile, UObject* owner);
+
+    void ClearProfilesFor(UObject* owner);
     
-    UJuiceProfile* RegisterProfile(UJuiceProfile* profile, UObject* owner);
-    UJuiceProfile* GetRuntimeProfile(const UJuiceProfile* profile, UObject* owner);
+protected:
+    URuntimeJuiceProfile* AddRuntimeProfile(UJuiceProfile* juiceProfile, UObject* owner);
 };
