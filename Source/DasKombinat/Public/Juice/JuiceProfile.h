@@ -50,7 +50,6 @@ public:
     /// profile and cache it on your call site to save you a whole bunch of lookups.
     ///
     void Play(FJuiceInfo& fji, UObject* owner);
-
     
     ///
     /// Gets a runtime profile for this juice profile asset
@@ -59,4 +58,11 @@ public:
     /// get this runtime profile.
     ///
     URuntimeJuiceProfile* GetRuntimeProfile(UObject* owner);
+
+    
+    ///
+    /// Clears all registered profiles for the given owner.
+    /// Call this before owner is destroyed to clean up.
+    ///
+    static void ClearProfilesFor(UObject* owner);
 };

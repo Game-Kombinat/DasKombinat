@@ -9,7 +9,6 @@
 void URuntimeJuiceProfile::InitProfile(UJuiceProfile* inOriginalProfile, UObject* inOwner) {
     originalProfile = inOriginalProfile;
     world = inOwner->IsA(UWorld::StaticClass()) ? Cast<UWorld>(inOwner) : inOwner->GetWorld();
-    owner = inOwner;
 
     auto handlerTemplates = originalProfile->GetHandlers();
     runtimeHandlers.Reset(handlerTemplates.Num());

@@ -11,6 +11,10 @@
 USTRUCT()
 struct FProfileOwnerRegister {
     GENERATED_BODY()
+
+    UPROPERTY()
+    TWeakObjectPtr<UObject> owner;
+    
     UPROPERTY()
     TArray<class URuntimeJuiceProfile*> runtimeProfiles;
 
@@ -34,15 +38,16 @@ class DASKOMBINAT_API UJuiceSubsystem : public UWorldSubsystem {
     GENERATED_BODY()
 protected:
     UPROPERTY()
-    TMap<UObject*, FProfileOwnerRegister> registeredProfiles;
+    TMap<FString, FProfileOwnerRegister> registeredProfiles;
     
 public:
     virtual void Initialize(FSubsystemCollectionBase& Collection) override;
     virtual void Deinitialize() override;
     URuntimeJuiceProfile* GetRuntimeProfile(UJuiceProfile* juiceProfile, UObject* owner);
 
-    void ClearProfilesFor(UObject* owner);
-    
+    void ClearProfilesFor(const UObject* owner);
+    void CheckForDeadRecords();
+
 protected:
     URuntimeJuiceProfile* AddRuntimeProfile(UJuiceProfile* juiceProfile, UObject* owner);
 };

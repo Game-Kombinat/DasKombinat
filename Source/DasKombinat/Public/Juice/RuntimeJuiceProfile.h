@@ -22,9 +22,6 @@ protected:
     UPROPERTY(Transient)
     UWorld* world;
 
-    UPROPERTY(Transient)
-    UObject* owner;
-
 public:
     UPROPERTY(Transient)
     UJuiceProfile* originalProfile;

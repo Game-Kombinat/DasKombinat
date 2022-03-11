@@ -18,46 +18,63 @@ void UJuiceSubsystem::Deinitialize() {
 }
 
 URuntimeJuiceProfile* UJuiceSubsystem::GetRuntimeProfile(UJuiceProfile* juiceProfile, UObject* owner) {
-    if (!registeredProfiles.Contains(owner)) {
+    // This could be called periodically to ensure we got no instantiated profiles without a valid owner.
+    // Calling it here everytime is a really really bad idea so I don't and expect that you will call ClearProfilesFor()
+    // When you use profiles on your things.
+    // CheckForDeadRecords();
+    
+    const FString ownerName = owner->GetFullName();
+    if (!registeredProfiles.Contains(ownerName)) {
         return AddRuntimeProfile(juiceProfile, owner);
     }
-    const auto rt = registeredProfiles[owner].GetRuntimeProfileFor(juiceProfile);
+    const auto rt = registeredProfiles[ownerName].GetRuntimeProfileFor(juiceProfile);
     if (!rt) {
         return AddRuntimeProfile(juiceProfile, owner);
     }
     return rt;
 }
 
-void UJuiceSubsystem::ClearProfilesFor(UObject* owner) {
-    if (!registeredProfiles.Contains(owner)) {
+void UJuiceSubsystem::ClearProfilesFor(const UObject* owner) {
+    const FString ownerName = owner->GetFullName();
+    if (!registeredProfiles.Contains(ownerName)) {
         return;
     }
 
-    for (auto rt : registeredProfiles[owner].runtimeProfiles) {
+    for (const auto rt : registeredProfiles[ownerName].runtimeProfiles) {
         rt->DeinitProfile();
     }
 
-    registeredProfiles.Remove(owner);
+    registeredProfiles.Remove(ownerName);
 }
 
-URuntimeJuiceProfile* UJuiceSubsystem::AddRuntimeProfile(UJuiceProfile* juiceProfile, UObject* owner) {
-    // check if we get any null pointers as keys first, those are objects that got deleted and didn't
-    // mark their juice stuff for deletion.
+void UJuiceSubsystem::CheckForDeadRecords() {
+    TArray<FString> forDeletion;
     for (auto kvp : registeredProfiles) {
-        if (!kvp.Key) {
+        if (!kvp.Value.owner.IsValid()) {
             for (const auto rt : kvp.Value.runtimeProfiles) {
                 rt->DeinitProfile();
             }
             kvp.Value.runtimeProfiles.Reset();
+            forDeletion.Add(kvp.Key);
         }
     }
-    
-    if (!registeredProfiles.Contains(owner)) {
-        registeredProfiles.Add(owner, FProfileOwnerRegister());
+
+    for (auto dp : forDeletion) {
+        registeredProfiles.Remove(dp);
+    }
+}
+
+URuntimeJuiceProfile* UJuiceSubsystem::AddRuntimeProfile(UJuiceProfile* juiceProfile, UObject* owner) {
+
+    const FString ownerName = owner->GetFullName();
+    if (!registeredProfiles.Contains(ownerName)) {
+        FProfileOwnerRegister r;
+        r.owner = owner;
+        registeredProfiles.Add(ownerName, r);
     }
 
     const auto newRt = NewObject<URuntimeJuiceProfile>(GetTransientPackage(), URuntimeJuiceProfile::StaticClass(), NAME_None, RF_Transient);
     newRt->InitProfile(juiceProfile, owner);
-    registeredProfiles[owner].runtimeProfiles.Add(newRt);
+    registeredProfiles[ownerName].runtimeProfiles.Add(newRt);
     return newRt;
 }

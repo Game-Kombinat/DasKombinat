@@ -13,3 +13,9 @@ URuntimeJuiceProfile* UJuiceProfile::GetRuntimeProfile(UObject* owner) {
     return owner->GetWorld()->GetSubsystem<UJuiceSubsystem>()->GetRuntimeProfile(this, owner);
 }
 
+void UJuiceProfile::ClearProfilesFor(UObject* owner) {
+    if (owner && owner->GetWorld()) {
+        owner->GetWorld()->GetSubsystem<UJuiceSubsystem>()->ClearProfilesFor(owner);
+    }
+}
+
