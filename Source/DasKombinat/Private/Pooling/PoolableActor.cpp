@@ -3,6 +3,7 @@
 
 #include "Pooling/PoolableActor.h"
 
+#include "Logging.h"
 #include "Net/UnrealNetwork.h"
 
 

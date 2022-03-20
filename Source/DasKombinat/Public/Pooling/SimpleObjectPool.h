@@ -99,7 +99,7 @@ bool USimpleObjectPool::Get(T** geddit, bool canSpawnNewObject) {
         *geddit = tmp;
         return true;
     }
-    LOG_WARNING("No free objects in pool!");
+    LOG_WARNING("No free objects in pool of type %s owned by %s!", *pooledType.Get()->GetName(), *poolOwner->GetName());
     return false;
 }
 

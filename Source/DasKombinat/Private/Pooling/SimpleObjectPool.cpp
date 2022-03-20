@@ -75,7 +75,7 @@ APoolableActor* USimpleObjectPool::Get() {
         return a;
     }
     
-    LOG_WARNING("No free objects in pool!");
+    LOG_WARNING("No free objects in pool of type %s!", *pooledType.Get()->GetName());
     return nullptr;
 }
 
@@ -99,7 +99,7 @@ bool USimpleObjectPool::Get(APoolableActor** geddit) {
         return true;
     }
     *geddit = nullptr;
-    LOG_WARNING("No free objects in pool!");
+    LOG_WARNING("No free objects in pool of type %s!", *pooledType.Get()->GetName());
     return false;
 }
 
