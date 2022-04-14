@@ -39,6 +39,10 @@ void UTransitionalFsm::AddState(int stateId, UFsmState* stateObj) {
     stateList.Add(stateId, stateObj);
 }
 
+void UTransitionalFsm::AddState(const int stateId, const TSubclassOf<UFsmState> stateClass) {
+    AddState(stateId, NewObject<UFsmState>(this, stateClass.Get()));
+}
+
 void UTransitionalFsm::AddTransitionViaBlueprint(int from, int to, FTransitionTest func) {
     const auto transitionTargetState = GetState(to);
     const auto transitionSourceState = GetState(from);
@@ -59,6 +63,9 @@ void UTransitionalFsm::AddTransitionViaBlueprint(int from, int to, FTransitionTe
 
 void UTransitionalFsm::SetDefaultState(const int state) {
     defaultStateId = state;
+}
+
+void UTransitionalFsm::ConstructState_Implementation() {
 }
 
 UFsmState* UTransitionalFsm::GetState(int stateId) {

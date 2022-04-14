@@ -7,32 +7,37 @@
 #include "FsmState.generated.h"
 
 ///
-/// Implement this FsmState according to whatever logic it requires.
-/// todo: make this thing blueprintable and turn virtuals into blueprint native events
-/// so we can have states in blueprints. professional.
+/// A state that can be run in a state machine.
 ///
-UCLASS(Abstract)
+UCLASS(Blueprintable, BlueprintType)
 class DASKOMBINAT_API UFsmState : public UObject {
     GENERATED_BODY()
 public:
-    UPROPERTY()
+    // The ID is given when setting up the states.
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
     int id;
 
-    UPROPERTY()
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
     bool shouldTick;
 
-    virtual void Prepare(UWorld* inWorld) PURE_VIRTUAL(return);
+    UFUNCTION(BlueprintNativeEvent, meta=(WorldContext=inWorld))
+    void Prepare(UWorld* inWorld);
+    virtual void Prepare_Implementation(UWorld* inWorld);
 
-    virtual void Enter() PURE_VIRTUAL(return);
+    UFUNCTION(BlueprintNativeEvent)
+    void Enter();
+    // explicit virtual implementation as we use these when creating native states.
+    virtual void Enter_Implementation();
 
-    ///
-    /// Implement this only if your state requires ticking.
-    /// See NeedsTicking() for details.
-    ///
-    virtual void Tick() {}
+    UFUNCTION(BlueprintNativeEvent)
+    void Tick();
+    // explicit virtual implementation as we use these when creating native states.
+    virtual void Tick_Implementation();
 
-    virtual void Exit() PURE_VIRTUAL(return);
-
+    UFUNCTION(BlueprintNativeEvent)
+    void Exit();
+    // explicit virtual implementation as we use these when creating native states.
+    virtual void Exit_Implementation();
 
     ///
     /// By default a state is not ticked. If you need the state to be ticked, mark shouldTick = true.
