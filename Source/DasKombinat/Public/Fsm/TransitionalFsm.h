@@ -17,7 +17,7 @@ struct DASKOMBINAT_API FTransitionList {
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStateSwitched, class UFsmState*, newState);
 
-UCLASS()
+UCLASS(Blueprintable)
 class DASKOMBINAT_API UTransitionalFsm : public UObject {
     GENERATED_BODY()
 protected:
@@ -52,6 +52,9 @@ public:
 
     template<typename T>
     void AddTransition(int from, int to, T* host, bool(T::*method)());
+
+    UFUNCTION(BlueprintCallable, meta=(DisplayName="Add Transition"))
+    void AddTransitionViaBlueprint(int from, int to, FTransitionTest func);
 
     void SetDefaultState(int state);
 

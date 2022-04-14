@@ -3,30 +3,37 @@
 
 #include "TransitionCondition.generated.h"
 
+DECLARE_DYNAMIC_DELEGATE_RetVal(bool, FTransitionTest);
+
 class FDelegateInterface {
 public:
     virtual ~FDelegateInterface() = default;
     virtual bool Call() = 0;
 };
 
+// Handles in-code ez-sneezy function pointers 
 template<typename T>
-class FDelegate : public FDelegateInterface {
+class FNativeDelegate : public FDelegateInterface {
 public:
     typedef bool (T::*Method)();
 
-    static TSharedPtr<FDelegate<T>> Create(T* instance, Method method) {
-        return MakeShared<FDelegate<T>>(instance, method);
+    static TSharedPtr<FNativeDelegate<T>> Create(T* instance, Method method) {
+        return MakeShared<FNativeDelegate<T>>(instance, method);
     }
     
-    FDelegate(T* target, const Method operation) : methodHandle(operation), instance(target) {
+    FNativeDelegate(T* target, const Method operation) : methodHandle(operation), instance(target) {
     }
 
-    virtual ~FDelegate() override {
+    virtual ~FNativeDelegate() override {
         methodHandle = 0;
         instance = 0;
     }
 
     virtual bool Call() override {
+        if (!instance) {
+            LOG_WARNING("Unbound native transition delegate. Returning true per default.");
+            return true;
+        }
         return (instance->*methodHandle)();
     }
 
@@ -42,12 +49,38 @@ private:
     
 };
 
+// handles blueprint shenanigans
+class FUnrealDelegate : public FDelegateInterface {
+public:
+
+    static TSharedPtr<FUnrealDelegate> Create(FTransitionTest testMethod) {
+        return MakeShared<FUnrealDelegate>(testMethod);
+    }
+    
+    FUnrealDelegate(FTransitionTest testMethod) : methodHandle(testMethod) {
+    }
+
+    virtual ~FUnrealDelegate() override {
+    }
+
+    virtual bool Call() override {
+        if (methodHandle.IsBound()) {
+            return methodHandle.Execute();
+        }
+        LOG_WARNING("Unbound blueprint transition delegate. Returning true per default.")
+        return true;
+    }
+
+private:
+
+    FTransitionTest methodHandle;
+};
+
 USTRUCT()
 struct DASKOMBINAT_API FTransitionCondition {
     GENERATED_BODY()
 protected:
-    // This must be the non-generic base type here because at this point we can't have template type info
-    // that would be required to make this work.
+
     TSharedPtr<FDelegateInterface> callable;
 
     // This is referenced in the FDelegateInterface. We keep it here to stop GC from collecting this
@@ -62,15 +95,23 @@ public:
 
     bool Call() const {
         if (!callable.IsValid()) {
-            LOG_ERROR("Unbound FTransitionTest! Returning true per default");
+            LOG_ERROR("Unbound transition callable! Returning true per default");
             return true;
         }
         return callable->Call();
     };
 
+    // For native function binding
     template<typename T>
     void RegisterCall(T* obj, bool (T::*Func)()) {
-        callable = FDelegate<T>::Create(obj, Func);
+        callable = FNativeDelegate<T>::Create(obj, Func);
+        objRef = obj;
+    }
+
+    // For binding blueprint shenanigans
+    void RegisterCall(FTransitionTest transitionMethod) {
+        callable = FUnrealDelegate::Create(transitionMethod);
+        objRef = transitionMethod.GetUObject();
     }
 
     friend bool operator==(const FTransitionCondition& lhs, const FTransitionCondition& rhs) {
