@@ -1,15 +1,31 @@
 ﻿#pragma once
-#include "FsmState.h"
+#include "TransitionCondition.h"
+#include "FsmTransition.generated.h"
 
-DECLARE_DELEGATE_RetVal(bool, FsmTransitionCondition)
+USTRUCT()
+struct DASKOMBINAT_API FFsmTransition {
+    GENERATED_BODY()
 
-template<typename TStateId>
-struct FFsmTransition {
-    FsmTransitionCondition condition;
-    FFsmState<TStateId>* to;
+    TSharedPtr<FTransitionCondition> condition;
 
-    FFsmTransition(FFsmState<TStateId>* _to, FsmTransitionCondition _condition) {
-        to = _to;
-        condition = _condition;
+    UPROPERTY()
+    class UFsmState* to;
+
+    FFsmTransition(): to(nullptr) {
+
+    }
+
+    explicit FFsmTransition(UFsmState* inTarget, TSharedPtr<FTransitionCondition> inCondition) {
+        to = inTarget;
+        condition = inCondition;
+    }
+
+    friend bool operator==(const FFsmTransition& lhs, const FFsmTransition& rhs) {
+        return lhs.condition == rhs.condition
+            && lhs.to == rhs.to;
+    }
+
+    friend bool operator!=(const FFsmTransition& lhs, const FFsmTransition& rhs) {
+        return !(lhs == rhs);
     }
 };
