@@ -26,6 +26,9 @@ class DASKOMBINAT_API UTransitionalFsm : public UObject {
 protected:
     UPROPERTY()
     TMap<int, FTransitionList> transitions;
+    
+    UPROPERTY()
+    FTransitionList transitionsFromAnyState;
     UPROPERTY()
     TMap<int, class UFsmState*> stateList;
     UPROPERTY()
@@ -94,7 +97,7 @@ protected:
 
     void SetActiveState(UFsmState* newState);
 
-    bool FindTransition(FFsmTransition& outTransition);
+    bool FindTransition(UFsmState** outTransition);
 };
 
 template <typename T>
@@ -112,16 +115,21 @@ void UTransitionalFsm::AddTransition(int from, int to, T* host, bool(T::* method
     const auto transitionTargetState = GetState(to);
     const auto transitionSourceState = GetState(from);
     
-    if (!transitionSourceState || !transitionTargetState) {
+    if ((!transitionSourceState && from >= 0) || !transitionTargetState) {
         LOG_ERROR("Transition invalid. Target (%i) or Source (%i) state are unknown - not adding it.", to, from)
         return;
     }
 
     TSharedPtr<FTransitionCondition> func = MakeShared<FTransitionCondition>();
     func->RegisterCall(host, method);
-    
-    if (!transitions.Contains(from)) {
-        transitions.Add(from, FTransitionList());
+
+    if (from >= 0) {
+        if (!transitions.Contains(from)) {
+            transitions.Add(from, FTransitionList());
+        }
+        transitions[from].transitionList.AddUnique(FFsmTransition(transitionTargetState, func));
     }
-    transitions[from].transitionList.AddUnique(FFsmTransition(transitionTargetState, func));
+    else {
+        transitionsFromAnyState.transitionList.AddUnique(FFsmTransition(transitionTargetState, func));
+    }
 }

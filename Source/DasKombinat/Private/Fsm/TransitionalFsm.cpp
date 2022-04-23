@@ -24,9 +24,9 @@ void UTransitionalFsm::Prepare(UWorld* world) {
 }
 
 void UTransitionalFsm::CheckTransitions() {
-    FFsmTransition t;
-    if (FindTransition(t)) {
-        SetActiveState(t.to);
+    UFsmState* t = nullptr;
+    if (FindTransition(&t)) {
+        SetActiveState(t);
     }
 }
 
@@ -35,6 +35,11 @@ void UTransitionalFsm::Tick() const {
 }
 
 void UTransitionalFsm::AddState(int stateId, UFsmState* stateObj) {
+    if (stateId < 0) {
+        LOG_ERROR("Cannot add state IDs less than 0");
+        return;
+    }
+    
     stateObj->id = stateId;
     stateList.Add(stateId, stateObj);
 }
@@ -47,7 +52,7 @@ void UTransitionalFsm::AddTransition(int from, int to, TFunction<bool()> test) {
     const auto transitionTargetState = GetState(to);
     const auto transitionSourceState = GetState(from);
 
-    if (!transitionSourceState || !transitionTargetState) {
+    if ((!transitionSourceState && from >= 0) || !transitionTargetState) {
         LOG_ERROR("Transition invalid. Target (%i) or Source (%i) state are unknown - not adding it.", to, from)
         return;
     }
@@ -55,28 +60,39 @@ void UTransitionalFsm::AddTransition(int from, int to, TFunction<bool()> test) {
     const TSharedPtr<FTransitionCondition> transitionTest = MakeShared<FTransitionCondition>();
     transitionTest->RegisterCall(test);
     
-    if (!transitions.Contains(from)) {
-        transitions.Add(from, FTransitionList());
+    if (from >= 0) {
+        if (!transitions.Contains(from)) {
+            transitions.Add(from, FTransitionList());
+        }
+        transitions[from].transitionList.AddUnique(FFsmTransition(transitionTargetState, transitionTest));
     }
-    transitions[from].transitionList.AddUnique(FFsmTransition(transitionTargetState, transitionTest));
+    else {
+        transitionsFromAnyState.transitionList.AddUnique(FFsmTransition(transitionTargetState, transitionTest));
+    }
 }
 
 void UTransitionalFsm::AddTransitionViaBlueprint(int from, int to, FTransitionTest func) {
     const auto transitionTargetState = GetState(to);
     const auto transitionSourceState = GetState(from);
     
-    if (!transitionSourceState || !transitionTargetState) {
+    if ((!transitionSourceState && from >= 0) || !transitionTargetState) {
         LOG_ERROR("Transition invalid. Target (%i) or Source (%i) state are unknown - not adding it.", to, from)
         return;
     }
 
     const TSharedPtr<FTransitionCondition> transitionTest = MakeShared<FTransitionCondition>();
     transitionTest->RegisterCall(func);
-    
-    if (!transitions.Contains(from)) {
-        transitions.Add(from, FTransitionList());
+
+    if (from >= 0) {
+        if (!transitions.Contains(from)) {
+            transitions.Add(from, FTransitionList());
+        }
+        transitions[from].transitionList.AddUnique(FFsmTransition(transitionTargetState, transitionTest));
     }
-    transitions[from].transitionList.AddUnique(FFsmTransition(transitionTargetState, transitionTest));
+    else {
+        transitionsFromAnyState.transitionList.AddUnique(FFsmTransition(transitionTargetState, transitionTest));
+    }
+    
 }
 
 void UTransitionalFsm::SetDefaultState(const int state) {
@@ -94,7 +110,7 @@ UFsmState* UTransitionalFsm::GetState(int stateId) {
 }
 
 void UTransitionalFsm::SetActiveState(UFsmState* newState) {
-    if (newState == currentState) {
+    if (newState == currentState || newState == nullptr) {
         return;
     }
     if (currentState) {
@@ -115,11 +131,19 @@ void UTransitionalFsm::SetActiveState(UFsmState* newState) {
     }
 }
 
-bool UTransitionalFsm::FindTransition(FFsmTransition& outTransition) {
+bool UTransitionalFsm::FindTransition(UFsmState** outTransition) {
     for (int i = 0; i < currentTransitions.Num(); ++i) {
         auto transition = currentTransitions[i];
         if (transition.condition->Call()) {
-            outTransition = transition;
+            *outTransition = transition.to;
+            return true;
+        }
+    }
+
+    for (int i = 0; i < transitionsFromAnyState.transitionList.Num(); ++i) {
+        auto transition = transitionsFromAnyState.transitionList[i];
+        if (transition.condition->Call()) {
+            *outTransition = transition.to;
             return true;
         }
     }
