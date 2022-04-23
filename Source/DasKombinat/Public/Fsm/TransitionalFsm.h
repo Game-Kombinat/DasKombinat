@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "FsmTransition.h"
+#include "FunctionalFsmState.h"
 #include "UObject/Object.h"
 #include "TransitionalFsm.generated.h"
 
@@ -65,12 +66,16 @@ public:
 
     
     void AddState(int stateId, UFsmState* stateObj);
+    template<typename T>
+    void AddState(int stateId, T* obj, void(T::* enter)(), void(T::* exit)(), void(T::* tick)(), bool mustTick);
 
     UFUNCTION(BlueprintCallable)
     void AddState(int stateId, TSubclassOf<UFsmState> stateClass);
 
     template<typename T>
     void AddTransition(int from, int to, T* host, bool(T::*method)());
+    
+    void AddTransition(int from, int to, TFunction<bool()> test);
 
     UFUNCTION(BlueprintCallable, meta=(DisplayName="Add Transition"))
     void AddTransitionViaBlueprint(int from, int to, FTransitionTest func);
@@ -91,6 +96,16 @@ protected:
 
     bool FindTransition(FFsmTransition& outTransition);
 };
+
+template <typename T>
+void UTransitionalFsm::AddState(int stateId, T* obj, void(T::* enter)(), void(T::* exit)(), void(T::* tick)(), bool mustTick) {
+    auto state = NewObject<UFunctionalFsmState>(this);
+    state->SetCallbacks(obj, enter, tick, exit);
+    if (mustTick) {
+        state->MarkTickable();
+    }
+    AddState(stateId, state);
+}
 
 template <typename T>
 void UTransitionalFsm::AddTransition(int from, int to, T* host, bool(T::* method)()) {

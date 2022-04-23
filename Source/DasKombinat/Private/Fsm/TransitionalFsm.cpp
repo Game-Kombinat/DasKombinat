@@ -43,6 +43,24 @@ void UTransitionalFsm::AddState(const int stateId, const TSubclassOf<UFsmState> 
     AddState(stateId, NewObject<UFsmState>(this, stateClass.Get()));
 }
 
+void UTransitionalFsm::AddTransition(int from, int to, TFunction<bool()> test) {
+    const auto transitionTargetState = GetState(to);
+    const auto transitionSourceState = GetState(from);
+
+    if (!transitionSourceState || !transitionTargetState) {
+        LOG_ERROR("Transition invalid. Target (%i) or Source (%i) state are unknown - not adding it.", to, from)
+        return;
+    }
+
+    const TSharedPtr<FTransitionCondition> transitionTest = MakeShared<FTransitionCondition>();
+    transitionTest->RegisterCall(test);
+    
+    if (!transitions.Contains(from)) {
+        transitions.Add(from, FTransitionList());
+    }
+    transitions[from].transitionList.AddUnique(FFsmTransition(transitionTargetState, transitionTest));
+}
+
 void UTransitionalFsm::AddTransitionViaBlueprint(int from, int to, FTransitionTest func) {
     const auto transitionTargetState = GetState(to);
     const auto transitionSourceState = GetState(from);

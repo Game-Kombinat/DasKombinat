@@ -76,6 +76,30 @@ private:
     FTransitionTest methodHandle;
 };
 
+// Handles lambda expressions,
+class FLambdaDelegate : public FDelegateInterface {
+public:
+
+    static TSharedPtr<FLambdaDelegate> Create(TFunction<bool()> testMethod) {
+        return MakeShared<FLambdaDelegate>(testMethod);
+    }
+    
+    FLambdaDelegate(TFunction<bool()> testMethod) : methodHandle(testMethod) {
+    }
+
+    virtual ~FLambdaDelegate() override {
+    }
+
+    virtual bool Call() override {
+        // sadly this crashes when unbound and there appears to be nothing to check first
+        return methodHandle();
+    }
+
+private:
+
+    TFunction<bool()> methodHandle;
+};
+
 USTRUCT()
 struct DASKOMBINAT_API FTransitionCondition {
     GENERATED_BODY()
@@ -112,6 +136,13 @@ public:
     void RegisterCall(FTransitionTest transitionMethod) {
         callable = FUnrealDelegate::Create(transitionMethod);
         objRef = transitionMethod.GetUObject();
+    }
+
+    void RegisterCall(TFunction<bool()> transitionMethod) {
+        callable = FLambdaDelegate::Create(transitionMethod);
+        // doesn't need a container / doesn't have a container.
+        // This may cause issues
+        // objRef = transitionMethod.GetUObject();
     }
 
     friend bool operator==(const FTransitionCondition& lhs, const FTransitionCondition& rhs) {
