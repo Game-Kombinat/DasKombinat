@@ -14,16 +14,16 @@ class DASKOMBINAT_API UVectorTools : public UBlueprintFunctionLibrary {
     GENERATED_BODY()
 public:
     UFUNCTION(BlueprintCallable)
-    static float CosineAngle(const FVector& a, const FVector& b);
+    static float CosineAngle(const FVector& normal, const FVector& facingThis);
     UFUNCTION(BlueprintCallable)
-    static float CosineAngleDirection(const FVector& a, const FVector& direction);
+    static float CosineAngleDirection(const FVector& normal, const FVector& direction);
     /**
      * Is the directional vector a facing in the direction of positional vector b?
      * This just takes a dot product of both vectors and checks the directionality.
      * Precision parameter defines "how much" we need to face at vector b to be facing it.
      */
     UFUNCTION(BlueprintCallable)
-    static bool IsFacing(const FVector& a, const FVector& b, float precision = .55f);
+    static bool IsFacing(const FVector& normal, const FVector& facingThis, float precision = .55f);
 
     /**
      * Is the directional vector a facing in the direction of positional vector b?
@@ -31,9 +31,9 @@ public:
      * Precision parameter defines the max angle for the direction a to be considered facing at vector b.
      */
     UFUNCTION(BlueprintCallable)
-    static bool IsFacingAngle(const FVector& a, const FVector& b, float angle = 45.f);
+    static bool IsFacingAngle(const FVector& normal, const FVector& facingThis, float angle = 45.f);
 
     UFUNCTION(BlueprintCallable)
-    static bool IsFacingAngleDirection(const FVector& a, const FVector& direction, float angle = 45.f);
+    static bool IsFacingAngleDirection(const FVector& normal, const FVector& direction, float angle = 45.f);
 
 };
