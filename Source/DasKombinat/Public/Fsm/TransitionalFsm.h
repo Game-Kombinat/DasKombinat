@@ -103,7 +103,7 @@ protected:
 template <typename T>
 void UTransitionalFsm::AddState(int stateId, T* obj, void(T::* enter)(), void(T::* exit)(), void(T::* tick)(), bool mustTick) {
     auto state = NewObject<UFunctionalFsmState>(this);
-    state->SetCallbacks(obj, enter, tick, exit);
+    state->SetCallbacks(obj, enter, exit, tick);
     if (mustTick) {
         state->MarkTickable();
     }

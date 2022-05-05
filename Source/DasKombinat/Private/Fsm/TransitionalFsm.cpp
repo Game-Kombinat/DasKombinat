@@ -125,10 +125,11 @@ void UTransitionalFsm::SetActiveState(UFsmState* newState) {
         currentTransitions = emptyTransitionList;
     }
 
-    currentState->Enter();
     if (onStateSwitched.IsBound()) {
         onStateSwitched.Broadcast(currentState);
     }
+    currentState->Enter();
+    
 }
 
 bool UTransitionalFsm::FindTransition(UFsmState** outTransition) {
