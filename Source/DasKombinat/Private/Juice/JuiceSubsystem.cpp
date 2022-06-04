@@ -41,7 +41,9 @@ void UJuiceSubsystem::ClearProfilesFor(const UObject* owner) {
     }
 
     for (const auto rt : registeredProfiles[ownerName].runtimeProfiles) {
-        rt->DeinitProfile();
+        if (rt) {
+            rt->DeinitProfile();
+        }
     }
 
     registeredProfiles.Remove(ownerName);
