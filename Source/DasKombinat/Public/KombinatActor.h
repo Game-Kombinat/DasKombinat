@@ -32,7 +32,4 @@ public:
     
     UFUNCTION(BlueprintCallable)
     void SetActive(bool activate);
-
-    
-    
 };

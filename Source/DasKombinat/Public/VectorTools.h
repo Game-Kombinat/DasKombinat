@@ -24,7 +24,7 @@ public:
     UFUNCTION(BlueprintCallable)
     static bool IsFacing(const FVector& normal, const FVector& fromHere, const FVector& facingThis, float precision = .55f);
 
-    UFUNCTION(BlueprintCallable)
+    UFUNCTION(BlueprintCallable, BlueprintPure)
     static bool IsFacingDirection(const FVector& direction, const FVector& targetDirection, float precision = .55f);
 
     /**
