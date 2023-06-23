@@ -1,8 +1,7 @@
 ﻿#pragma once
+#include "Anim8Action.h"
 #include "CoroutineControl.h"
-
-DECLARE_DELEGATE_OneParam(FAnim8Sample, float)
-DECLARE_DELEGATE(FAnim8Done)
+#include "CoroutineManager.h"
 
 class DASKOMBINAT_API FInterpolator {
 private:
@@ -60,9 +59,24 @@ public:
     /**
      * Start linear interpolation on the game thread. Callbacks are lambdas.
      */
-    static FCoroutineControl Anim8(UWorld* world, float duration, bool playForward, UObject* objRef, void (UObject::*onSample)(float), void (UObject::*onFinish)());
+    template<typename T>
+    static FCoroutineControl Anim8(UWorld* world, float duration, bool playForward, T* objRef, void (T::*onSample)(float), void (T::*onFinish)());
     
 private:
     void Force(float target);
     void StartFade(float a, float b, bool reset);
 };
+
+template <typename T>
+FCoroutineControl FInterpolator::Anim8(UWorld* world, float duration, bool playForward, T* objRef, void(T::* onSample)(float), void(T::* onFinish)()) {
+
+    FAnim8Sample sample;
+    sample.BindUObject(objRef, onSample);
+    
+    FAnim8Done done;
+    done.BindUObject(objRef, onFinish);
+    const auto p = MakeShared<FInterpolator>(duration, world);
+    const auto shared = MakeShared<FAnim8Action>(playForward, p, sample, done);
+    
+    return UCoroutineManager::Instance()->Add(shared);
+}

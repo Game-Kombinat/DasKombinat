@@ -74,19 +74,11 @@ float FInterpolator::SampleTime() const {
 
 FCoroutineControl FInterpolator::Anim8(UWorld* world, float duration, bool playForward, FAnim8Sample onSample,
                                        FAnim8Done onFinish) {
-    const auto shared = MakeShareable(new FAnim8Action(playForward, FInterpolator(duration, world), onSample, onFinish));
+    const auto p = MakeShared<FInterpolator>(duration, world);
+    const auto shared = MakeShared<FAnim8Action>(playForward, p, onSample, onFinish);
     return UCoroutineManager::Instance()->Add(shared);
 }
 
-FCoroutineControl FInterpolator::Anim8(UWorld* world, float duration, bool playForward, UObject* objRef, void (UObject::*onSample)(float), void (UObject::*onFinish)()) {
-    FAnim8Sample sample;
-    sample.BindUObject(objRef, onSample);
-
-    FAnim8Done done;
-    done.BindUObject(objRef, onFinish);
-    const auto shared = MakeShareable(new FAnim8Action(playForward, FInterpolator(duration, world), sample, done));
-    return UCoroutineManager::Instance()->Add(shared);
-}
 
 void FInterpolator::Force(float target) {
     if (!world) {

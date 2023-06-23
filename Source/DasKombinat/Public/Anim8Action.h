@@ -4,7 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "Coroutine.h"
-#include "Interpolator.h"
+
+DECLARE_DELEGATE_OneParam(FAnim8Sample, float)
+DECLARE_DELEGATE(FAnim8Done)
 
 /**
  * 
@@ -15,10 +17,10 @@ private:
     FAnim8Done onFinish;
     bool directionIsForward;
     bool forceDone;
-    FInterpolator interpolator;
+    TSharedPtr<class FInterpolator> interpolator;
 public:
     FAnim8Action();
-    FAnim8Action(bool directionIsForward, FInterpolator interpolator, FAnim8Sample onSample, FAnim8Done onFinish);
+    FAnim8Action(bool directionIsForward, TSharedPtr<class FInterpolator> interpolator, FAnim8Sample onSample, FAnim8Done onFinish);
     virtual void PreTick() override;
     virtual ~FAnim8Action() override;
     virtual void Tick() override;
