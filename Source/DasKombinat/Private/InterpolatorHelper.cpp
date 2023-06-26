@@ -7,14 +7,7 @@
 
 UInterpolatorHelper* UInterpolatorHelper::Interpolate(UObject* worldContext, float duration) {
     const auto interp = NewObject<UInterpolatorHelper>();
-
-    FAnim8Sample sample;
-    sample.BindUFunction(interp, "OnInterpolatorTick");
-
-    FAnim8Done done;
-    done.BindUFunction(interp, "OnFinished");
-    
-    FInterpolator::Anim8(worldContext->GetWorld(), duration, true, sample, done);
+    FInterpolator::Anim8(worldContext->GetWorld(), duration, true, interp, &UInterpolatorHelper::OnInterpolatorTick, &UInterpolatorHelper::OnFinished);
     return interp;
 }
 

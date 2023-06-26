@@ -14,7 +14,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FInterpolatorTick, float, alpha);
 UCLASS(meta=(HideThen=true))
 class DASKOMBINAT_API UInterpolatorHelper : public UBlueprintAsyncActionBase  {
     GENERATED_BODY()
-    
+protected:
     UPROPERTY(BlueprintAssignable)
     FInterpolatorTick tick;
 
@@ -22,9 +22,7 @@ class DASKOMBINAT_API UInterpolatorHelper : public UBlueprintAsyncActionBase  {
     UPROPERTY(BlueprintAssignable)
     FInterpolatorFinished done;
 
-protected:
-
-    UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext="worldContext"))
+     UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext="worldContext"))
     static UInterpolatorHelper* Interpolate(UObject* worldContext, float duration);
 
     UFUNCTION()
@@ -32,5 +30,4 @@ protected:
 
     UFUNCTION()
     void OnInterpolatorTick(float t);
-
 };

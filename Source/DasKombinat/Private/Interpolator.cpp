@@ -87,6 +87,7 @@ void FInterpolator::Force(float target) {
     stateA = 1.0f - target;
     stateB = target;
     startTime = world->GetTimeSeconds() - duration01;
+    currentValue = stateA;
 }
 
 void FInterpolator::StartFade(float a, float b, bool reset) {
@@ -102,7 +103,6 @@ void FInterpolator::StartFade(float a, float b, bool reset) {
     else {
         float time = world->GetTimeSeconds();
         //If the interpolator gets interrupted in the middle of a fading, continue at the same position
-        startTime = FMath::Lerp(time, time - Duration(),
-            UKismetMathLibrary::NormalizeToRange(currentValue, stateA, stateB));
+        startTime = FMath::Lerp(time, time - Duration(), UKismetMathLibrary::NormalizeToRange(currentValue, stateA, stateB));
     }
 }
