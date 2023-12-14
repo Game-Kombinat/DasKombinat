@@ -26,7 +26,10 @@ TSharedRef<SWidget> UKombinatButton::RebuildWidget() {
 
 void UKombinatButton::BeginDestroy() {
     if (IsValid(this)) {
-        UKismetSystemLibrary::K2_ClearTimer(this, "CheckFocus");
+        // Causes warnings regarding unbound functions because this is null, apparently.
+        // Which is weird because it appears to be valid, after all.
+        // In previous versions of Unreal the null-timers caused crashes which is why this was here
+        // UKismetSystemLibrary::K2_ClearTimer(this, "CheckFocus");
         OnClicked.RemoveDynamic(this, &UKombinatButton::KombinatHandleClicked);
         OnHovered.RemoveDynamic(this, &UKombinatButton::KombinatHandleHover);
     }
